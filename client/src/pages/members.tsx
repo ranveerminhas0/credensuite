@@ -53,8 +53,8 @@ export default function Members() {
   });
 
   const filteredMembers = members?.filter((member: Member) => {
-    const matchesRole = !roleFilter || member.designation === roleFilter;
-    const matchesStatus = !statusFilter || 
+    const matchesRole = !roleFilter || roleFilter === "all" || member.designation === roleFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || 
       (statusFilter === "active" && member.isActive) ||
       (statusFilter === "inactive" && !member.isActive);
     
@@ -223,7 +223,7 @@ export default function Members() {
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Roles</SelectItem>
+              <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="volunteer">Volunteer</SelectItem>
               <SelectItem value="coordinator">Coordinator</SelectItem>
               <SelectItem value="manager">Manager</SelectItem>
@@ -236,7 +236,7 @@ export default function Members() {
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
