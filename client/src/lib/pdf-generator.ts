@@ -1,4 +1,6 @@
 import { Member } from "@shared/schema";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export async function generatePDF(member: Member, photoFile?: File | null) {
   try {
@@ -6,530 +8,227 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
     const settingsResponse = await fetch('/api/settings');
     const settings = settingsResponse.ok ? await settingsResponse.json() : {};
     
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      throw new Error('Unable to open print window');
-    }
-
     const photoUrl = photoFile ? URL.createObjectURL(photoFile) : member.photoUrl || '';
     
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>ID Card - ${member.fullName}</title>
-          <style>
-            @page {
-              size: 2.051in 3.303in;
-              margin: 0;
-            }
-            @media print {
-              .card {
-                width: 2.051in !important;
-                height: 3.303in !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                page-break-after: always;
-              }
-            }
-            body {
-              font-family: 'Arial', sans-serif;
-              margin: 0;
-              padding: 0;
-              background: white;
-            }
-            .card {
-              width: 2.051in;
-              height: 3.303in;
-              background: white;
-              border: 1px solid #d1d5db;
-              border-radius: 8px;
-              overflow: hidden;
-              page-break-after: always;
-              position: relative;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            }
-            
-            /* Front Side Styles */
-            .card-front {
-              display: flex;
-              flex-direction: column;
-              height: 100%;
-            }
-            .header-pattern {
-              height: 64px;
-              background: linear-gradient(to right, #10b981, #059669);
-              position: relative;
-              overflow: hidden;
-            }
-            .header-pattern::before {
-              content: '';
-              position: absolute;
-              inset: 0;
-              background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.2), transparent);
-            }
-            .header-pattern svg {
-              position: absolute;
-              top: 0;
-              right: 0;
-              width: 96px;
-              height: 64px;
-            }
-            .header-content {
-              position: relative;
-              z-index: 10;
-              padding: 8px;
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              color: white;
-            }
-            .logo-circle {
-              width: 32px;
-              height: 32px;
-              background: rgba(255, 255, 255, 0.2);
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              backdrop-filter: blur(4px);
-            }
-            .org-info {
-              text-align: right;
-            }
-            .org-name {
-              font-size: 10px;
-              font-weight: bold;
-              line-height: 1.2;
-            }
-            .volunteer-id {
-              font-size: 8px;
-              opacity: 0.9;
-              font-weight: 500;
-              letter-spacing: 0.05em;
-            }
-            
-            .member-info {
-              padding: 12px;
-              margin-top: -16px;
-              position: relative;
-              z-index: 20;
-              flex: 1;
-            }
-            .member-row {
-              display: flex;
-              align-items: flex-start;
-              gap: 12px;
-            }
-            .photo-container {
-              position: relative;
-            }
-            .photo-frame {
-              width: 64px;
-              height: 64px;
-              border-radius: 50%;
-              background: linear-gradient(to bottom right, #d1fae5, #a7f3d0);
-              padding: 4px;
-            }
-            .photo {
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-              background: #e5e7eb;
-              object-fit: cover;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #6b7280;
-              font-size: 12px;
-            }
-            .status-indicator {
-              position: absolute;
-              bottom: -4px;
-              right: -4px;
-              width: 16px;
-              height: 16px;
-              background: #10b981;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-            .status-dot {
-              width: 6px;
-              height: 6px;
-              background: white;
-              border-radius: 50%;
-            }
-            .member-details {
-              flex: 1;
-              padding-top: 4px;
-            }
-            .member-name {
-              font-size: 14px;
-              font-weight: bold;
-              color: #1f2937;
-              line-height: 1.2;
-              margin-bottom: 2px;
-            }
-            .member-designation {
-              font-size: 10px;
-              color: #10b981;
-              font-weight: 600;
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-              margin-bottom: 4px;
-            }
-            .member-id {
-              background: #d1fae5;
-              color: #047857;
-              padding: 2px 8px;
-              border-radius: 4px;
-              font-size: 10px;
-              font-family: 'Courier New', monospace;
-              display: inline-block;
-            }
-            
-            .details-section {
-              padding: 0 12px 12px;
-            }
-            .details-box {
-              background: #f9fafb;
-              border-radius: 8px;
-              padding: 8px;
-            }
-            .detail-row {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              font-size: 10px;
-              margin-bottom: 6px;
-            }
-            .detail-row:last-child {
-              margin-bottom: 0;
-            }
-            .detail-label {
-              color: #6b7280;
-              font-weight: 500;
-            }
-            .detail-value {
-              color: #1f2937;
-              font-weight: 600;
-            }
-            .blood-group {
-              color: #10b981 !important;
-              font-weight: bold !important;
-            }
-            .detail-divider {
-              height: 1px;
-              background: #e5e7eb;
-              margin: 6px 0;
-            }
-            
-            /* Back Side Styles */
-            .card-back {
-              display: flex;
-              flex-direction: column;
-              height: 100%;
-            }
-            .back-header {
-              background: linear-gradient(to right, #d1fae5, #a7f3d0);
-              padding: 8px;
-              border-bottom: 1px solid #d1fae5;
-              text-align: center;
-            }
-            .back-org-name {
-              font-size: 12px;
-              font-weight: bold;
-              color: #1f2937;
-              margin-bottom: 4px;
-            }
-            .back-address {
-              font-size: 8px;
-              color: #6b7280;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 4px;
-              margin-bottom: 2px;
-            }
-            .address-dot {
-              width: 4px;
-              height: 4px;
-              background: #10b981;
-              border-radius: 50%;
-            }
-            
-            .emergency-section {
-              padding: 8px;
-              border-bottom: 1px solid #f3f4f6;
-            }
-            .emergency-box {
-              background: #f9fafb;
-              border-radius: 8px;
-              padding: 8px;
-            }
-            .emergency-title {
-              font-size: 10px;
-              font-weight: 600;
-              color: #1f2937;
-              margin-bottom: 8px;
-              display: flex;
-              align-items: center;
-              gap: 4px;
-            }
-            .emergency-indicator {
-              width: 6px;
-              height: 6px;
-              background: #ef4444;
-              border-radius: 50%;
-            }
-            .emergency-row {
-              display: flex;
-              justify-content: space-between;
-              font-size: 10px;
-              margin-bottom: 4px;
-            }
-            .emergency-row:last-child {
-              margin-bottom: 0;
-            }
-            .emergency-label {
-              color: #6b7280;
-              font-weight: 500;
-            }
-            .emergency-value {
-              color: #1f2937;
-              font-weight: 600;
-              text-align: right;
-              flex: 1;
-              margin-left: 8px;
-            }
-            
-            .qr-section {
-              padding: 8px;
-              border-bottom: 1px solid #f3f4f6;
-            }
-            .qr-row {
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-            .qr-code {
-              width: 48px;
-              height: 48px;
-              background: linear-gradient(to bottom right, #d1fae5, #a7f3d0);
-              border: 2px solid #d1fae5;
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
-            }
-            .qr-icon {
-              font-size: 16px;
-              color: #10b981;
-            }
-            .qr-text {
-              flex: 1;
-            }
-            .qr-title {
-              font-size: 10px;
-              color: #1f2937;
-              font-weight: 600;
-              margin-bottom: 2px;
-            }
-            .qr-description {
-              font-size: 8px;
-              color: #6b7280;
-              line-height: 1.3;
-            }
-            
-            .signature-section {
-              padding: 8px;
-              margin-top: auto;
-            }
-            .signature-row {
-              display: flex;
-              justify-content: space-between;
-              gap: 8px;
-            }
-            .signature-box {
-              flex: 1;
-            }
-            .signature-label {
-              font-size: 8px;
-              color: #6b7280;
-              font-weight: 500;
-              margin-bottom: 4px;
-            }
-            .signature-line {
-              width: 100%;
-              height: 24px;
-              border-bottom: 2px dotted #10b981;
-              display: flex;
-              align-items: end;
-            }
-            .validity-note {
-              margin-top: 8px;
-              text-align: center;
-            }
-            .validity-text {
-              font-size: 8px;
-              color: #6b7280;
-              font-style: italic;
-            }
-          </style>
-        </head>
-        <body>
-          <!-- Front Side -->
-          <div class="card">
-            <div class="card-front">
-              <div class="header-pattern">
-                <svg viewBox="0 0 100 60">
-                  <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
-                  <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
-                </svg>
-                <div class="header-content">
-                  <div class="logo-circle">
-                    ${settings.logoUrl ? `<img src="${settings.logoUrl}" style="width:20px;height:20px;border-radius:50%;object-fit:contain;">` : '♥'}
-                  </div>
-                  <div class="org-info">
-                    <div class="org-name">${settings.organizationName || 'Your NGO Name'}</div>
-                    <div class="volunteer-id">VOLUNTEER ID</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="member-info">
-                <div class="member-row">
-                  <div class="photo-container">
-                    <div class="photo-frame">
-                      <div class="photo">
-                        ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 'Photo'}
-                      </div>
-                    </div>
-                    <div class="status-indicator">
-                      <div class="status-dot"></div>
-                    </div>
-                  </div>
-                  <div class="member-details">
-                    <div class="member-name">${member.fullName}</div>
-                    <div class="member-designation">${member.designation}</div>
-                    <div class="member-id">${member.memberId}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="details-section">
-                <div class="details-box">
-                  <div class="detail-row">
-                    <span class="detail-label">Joining Date:</span>
-                    <span class="detail-value">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                  </div>
-                  <div class="detail-divider"></div>
-                  <div class="detail-row">
-                    <span class="detail-label">Contact:</span>
-                    <span class="detail-value">${member.contactNumber}</span>
-                  </div>
-                  <div class="detail-divider"></div>
-                  <div class="detail-row">
-                    <span class="detail-label">Blood Group:</span>
-                    <span class="detail-value blood-group">${member.bloodGroup || 'N/A'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Back Side -->
-          <div class="card">
-            <div class="card-back">
-              <div class="back-header">
-                <div class="back-org-name">${settings.organizationName || 'Your NGO Name'}</div>
-                <div class="back-address">
-                  <span class="address-dot"></span>
-                  <span>${settings.address || '123 Main Street, City, State 12345'}</span>
-                </div>
-                <div class="back-address">
-                  <span class="address-dot"></span>
-                  <span>${settings.phoneNumber || '(555) 123-4567'} | ${settings.emailAddress || 'info@yourorg.org'}</span>
-                </div>
-              </div>
-              
-              ${member.emergencyContactName || member.emergencyContactNumber ? `
-                <div class="emergency-section">
-                  <div class="emergency-box">
-                    <div class="emergency-title">
-                      <span class="emergency-indicator"></span>
-                      Emergency Contact
-                    </div>
-                    ${member.emergencyContactName ? `
-                      <div class="emergency-row">
-                        <span class="emergency-label">Name:</span>
-                        <span class="emergency-value">${member.emergencyContactName}</span>
-                      </div>
-                    ` : ''}
-                    ${member.emergencyContactNumber ? `
-                      <div class="emergency-row">
-                        <span class="emergency-label">Phone:</span>
-                        <span class="emergency-value">${member.emergencyContactNumber}</span>
-                      </div>
-                    ` : ''}
-                  </div>
-                </div>
-              ` : ''}
-              
-              <div class="qr-section">
-                <div class="qr-row">
-                  <div class="qr-code">
-                    <div class="qr-icon">⧈</div>
-                  </div>
-                  <div class="qr-text">
-                    <div class="qr-title">Property of ${settings.organizationName || 'Your NGO'}</div>
-                    <div class="qr-description">If found, please return to the above address or contact us immediately.</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="signature-section">
-                <div class="signature-row">
-                  <div class="signature-box">
-                    <div class="signature-label">Authorized Signatory</div>
-                    <div class="signature-line">
-                      ${settings.signatureUrl ? `<img src="${settings.signatureUrl}" style="height:100%;object-fit:contain;">` : ''}
-                    </div>
-                  </div>
-                  <div class="signature-box">
-                    <div class="signature-label">Member Signature</div>
-                    <div class="signature-line"></div>
-                  </div>
-                </div>
-                <div class="validity-note">
-                  <div class="validity-text">Valid with authorized signature only</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+    // Create a temporary container for the cards
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    container.style.background = 'white';
+    container.style.padding = '20px';
     
-    // Wait for content to load, then print
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-      
-      // Clean up object URL if created
-      if (photoFile && photoUrl) {
-        URL.revokeObjectURL(photoUrl);
-      }
-    }, 1000);
+    // Card dimensions: 2.051" x 3.303" at 300 DPI = 615px x 991px
+    const cardWidth = 615;
+    const cardHeight = 991;
+    
+    container.innerHTML = `
+      <div style="display: flex; gap: 20px; flex-direction: column;">
+        <!-- Front Side -->
+        <div id="card-front" style="width: ${cardWidth}px; height: ${cardHeight}px; background: white; border: 3px solid #d1d5db; border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 12px 36px rgba(0,0,0,0.15); font-family: Arial, sans-serif;">
+          <!-- Header Pattern -->
+          <div style="height: 192px; background: linear-gradient(to right, #10b981, #059669); position: relative; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.2), transparent);"></div>
+            <svg style="position: absolute; top: 0; right: 0; width: 288px; height: 192px;" viewBox="0 0 100 60">
+              <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
+              <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
+            </svg>
+            <div style="position: relative; z-index: 10; padding: 24px; display: flex; justify-content: space-between; align-items: flex-start; color: white;">
+              <div style="width: 96px; height: 96px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-size: 32px;">
+                ${settings.logoUrl ? `<img src="${settings.logoUrl}" style="width:60px;height:60px;border-radius:50%;object-fit:contain;">` : '♥'}
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 30px; font-weight: bold; line-height: 1.2; margin-bottom: 6px;">${settings.organizationName || 'Your NGO Name'}</div>
+                <div style="font-size: 24px; opacity: 0.9; font-weight: 500; letter-spacing: 0.15em;">VOLUNTEER ID</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Member Info -->
+          <div style="padding: 36px; margin-top: -48px; position: relative; z-index: 20; flex: 1;">
+            <div style="display: flex; align-items: flex-start; gap: 36px;">
+              <div style="position: relative;">
+                <div style="width: 192px; height: 192px; border-radius: 50%; background: linear-gradient(to bottom right, #d1fae5, #a7f3d0); padding: 12px;">
+                  <div style="width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 48px; overflow: hidden;">
+                    ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 'Photo'}
+                  </div>
+                </div>
+                <div style="position: absolute; bottom: -12px; right: -12px; width: 48px; height: 48px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 18px; height: 18px; background: white; border-radius: 50%;"></div>
+                </div>
+              </div>
+              <div style="flex: 1; padding-top: 12px;">
+                <div style="font-size: 54px; font-weight: bold; color: #1f2937; line-height: 1.2; margin-bottom: 12px;">${member.fullName}</div>
+                <div style="font-size: 30px; color: #10b981; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 18px;">${member.designation}</div>
+                <div style="background: #d1fae5; color: #047857; padding: 9px 24px; border-radius: 12px; font-size: 30px; font-family: 'Courier New', monospace; display: inline-block;">${member.memberId}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Details Section -->
+          <div style="padding: 0 36px 36px;">
+            <div style="background: #f9fafb; border-radius: 24px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px; margin-bottom: 18px;">
+                <span style="color: #6b7280; font-weight: 500;">Joining Date:</span>
+                <span style="color: #1f2937; font-weight: 600;">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+              </div>
+              <div style="height: 3px; background: #e5e7eb; margin: 18px 0;"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px; margin-bottom: 18px;">
+                <span style="color: #6b7280; font-weight: 500;">Contact:</span>
+                <span style="color: #1f2937; font-weight: 600;">${member.contactNumber}</span>
+              </div>
+              <div style="height: 3px; background: #e5e7eb; margin: 18px 0;"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px;">
+                <span style="color: #6b7280; font-weight: 500;">Blood Group:</span>
+                <span style="color: #10b981; font-weight: bold;">${member.bloodGroup || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- Back Side -->
+        <div id="card-back" style="width: ${cardWidth}px; height: ${cardHeight}px; background: white; border: 3px solid #d1d5db; border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 12px 36px rgba(0,0,0,0.15); font-family: Arial, sans-serif; display: flex; flex-direction: column;">
+          <!-- Header -->
+          <div style="background: linear-gradient(to right, #d1fae5, #a7f3d0); padding: 24px; border-bottom: 3px solid #d1fae5; text-align: center;">
+            <div style="font-size: 36px; font-weight: bold; color: #1f2937; margin-bottom: 12px;">${settings.organizationName || 'Your NGO Name'}</div>
+            <div style="font-size: 24px; color: #6b7280; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px;">
+              <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></span>
+              <span>${settings.address || '123 Main Street, City, State 12345'}</span>
+            </div>
+            <div style="font-size: 24px; color: #6b7280; display: flex; align-items: center; justify-content: center; gap: 12px;">
+              <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></span>
+              <span>${settings.phoneNumber || '(555) 123-4567'} | ${settings.emailAddress || 'info@yourorg.org'}</span>
+            </div>
+          </div>
+          
+          ${member.emergencyContactName || member.emergencyContactNumber ? `
+            <!-- Emergency Contact -->
+            <div style="padding: 24px; border-bottom: 3px solid #f3f4f6;">
+              <div style="background: #f9fafb; border-radius: 24px; padding: 24px;">
+                <div style="font-size: 30px; font-weight: 600; color: #1f2937; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                  <span style="width: 18px; height: 18px; background: #ef4444; border-radius: 50%;"></span>
+                  Emergency Contact
+                </div>
+                ${member.emergencyContactName ? `
+                  <div style="display: flex; justify-content: space-between; font-size: 30px; margin-bottom: 12px;">
+                    <span style="color: #6b7280; font-weight: 500;">Name:</span>
+                    <span style="color: #1f2937; font-weight: 600; text-align: right; flex: 1; margin-left: 24px;">${member.emergencyContactName}</span>
+                  </div>
+                ` : ''}
+                ${member.emergencyContactNumber ? `
+                  <div style="display: flex; justify-content: space-between; font-size: 30px;">
+                    <span style="color: #6b7280; font-weight: 500;">Phone:</span>
+                    <span style="color: #1f2937; font-weight: 600;">${member.emergencyContactNumber}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
+          
+          <!-- QR Section -->
+          <div style="padding: 24px; border-bottom: 3px solid #f3f4f6;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+              <div style="width: 144px; height: 144px; background: linear-gradient(to bottom right, #d1fae5, #a7f3d0); border: 6px solid #d1fae5; border-radius: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div style="font-size: 48px; color: #10b981;">⧈</div>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 30px; color: #1f2937; font-weight: 600; margin-bottom: 6px;">Property of ${settings.organizationName || 'Your NGO'}</div>
+                <div style="font-size: 24px; color: #6b7280; line-height: 1.3;">If found, please return to the above address or contact us immediately.</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Signatures -->
+          <div style="padding: 24px; margin-top: auto;">
+            <div style="display: flex; justify-content: space-between; gap: 24px;">
+              <div style="flex: 1;">
+                <div style="font-size: 24px; color: #6b7280; font-weight: 500; margin-bottom: 12px;">Authorized Signatory</div>
+                <div style="width: 100%; height: 72px; border-bottom: 6px dotted #10b981; display: flex; align-items: end;">
+                  ${settings.signatureUrl ? `<img src="${settings.signatureUrl}" style="height:100%;object-fit:contain;">` : ''}
+                </div>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 24px; color: #6b7280; font-weight: 500; margin-bottom: 12px;">Member Signature</div>
+                <div style="width: 100%; height: 72px; border-bottom: 6px dotted #10b981;"></div>
+              </div>
+            </div>
+            <div style="margin-top: 24px; text-align: center;">
+              <div style="font-size: 24px; color: #6b7280; font-style: italic;">Valid with authorized signature only</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(container);
+    
+    // Wait for images to load
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Create PDF with exact credit card dimensions
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'in',
+      format: [2.051, 3.303]
+    });
+    
+    // Capture front side
+    const frontCard = container.querySelector('#card-front') as HTMLElement;
+    const frontCanvas = await html2canvas(frontCard, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      allowTaint: true
+    });
+    
+    // Add front side to PDF
+    pdf.addImage(
+      frontCanvas.toDataURL('image/png'),
+      'PNG',
+      0,
+      0,
+      2.051,
+      3.303
+    );
+    
+    // Add new page for back side
+    pdf.addPage([2.051, 3.303]);
+    
+    // Capture back side
+    const backCard = container.querySelector('#card-back') as HTMLElement;
+    const backCanvas = await html2canvas(backCard, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      allowTaint: true
+    });
+    
+    // Add back side to PDF
+    pdf.addImage(
+      backCanvas.toDataURL('image/png'),
+      'PNG',
+      0,
+      0,
+      2.051,
+      3.303
+    );
+    
+    // Clean up
+    document.body.removeChild(container);
+    
+    // Clean up object URL if created
+    if (photoFile && photoUrl) {
+      URL.revokeObjectURL(photoUrl);
+    }
+    
+    // Download the PDF
+    const fileName = `ID-Card-${member.fullName.replace(/\s+/g, '-')}-${member.memberId}.pdf`;
+    pdf.save(fileName);
+    
+    console.log('PDF generated successfully');
+    
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    throw new Error('Failed to generate PDF: ' + error.message);
   }
 }

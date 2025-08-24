@@ -71,7 +71,7 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
 
       return response.json();
     },
-    onSuccess: (member) => {
+    onSuccess: async (member) => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });
       toast({
         title: "Success",
@@ -79,7 +79,20 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
       });
       
       // Generate and download PDF
-      generatePDF(member, photoFile);
+      try {
+        await generatePDF(member, photoFile);
+        toast({
+          title: "PDF Generated",
+          description: "ID card PDF downloaded successfully",
+        });
+      } catch (pdfError) {
+        console.error('PDF generation error:', pdfError);
+        toast({
+          title: "PDF Generation Failed",
+          description: "ID card created but PDF download failed. Please try again.",
+          variant: "destructive",
+        });
+      }
       
       // Reset form
       form.reset();
