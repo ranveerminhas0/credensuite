@@ -20,7 +20,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
   if (!member) {
     return (
       <div className="text-center py-12">
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg p-6 text-white max-w-sm mx-auto opacity-50">
+        <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-lg p-6 text-white max-w-sm mx-auto opacity-50">
           <div className="flex items-center justify-between mb-4">
             <Heart className="h-8 w-8" />
             <div className="text-right">
@@ -84,7 +84,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
 
       {/* Card Front Side */}
       {!showBack && (
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg p-6 text-white shadow-lg max-w-sm mx-auto" data-testid="card-front">
+        <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-lg p-6 text-white shadow-lg max-w-sm mx-auto" data-testid="card-front">
           <div className="flex items-center justify-between mb-4">
             {settings && settings.logoUrl ? (
               <img 
@@ -94,7 +94,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
               />
             ) : (
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                <Heart className="h-6 w-6 text-blue-600" />
+                <Heart className="h-6 w-6 text-green-600" />
               </div>
             )}
             <div className="text-right">
@@ -150,7 +150,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
 
       {/* Card Back Side */}
       {showBack && (
-        <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 max-w-sm mx-auto" data-testid="card-back">
+        <div className="bg-white border-2 border-green-200 rounded-lg p-6 max-w-sm mx-auto shadow-lg" data-testid="card-back">
           <div className="text-center mb-4">
             <h4 className="text-sm font-bold text-gray-800">
               {settings?.organizationName || "Your NGO Name"}
@@ -164,7 +164,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
             </p>
           </div>
           
-          <div className="border-t border-gray-300 pt-4 mb-4">
+          <div className="border-t border-green-200 pt-4 mb-4">
             <h5 className="text-sm font-semibold text-gray-800 mb-2">Emergency Contact:</h5>
             <p className="text-xs text-gray-600">
               {member.emergencyContactName || "Emergency Contact Name"}
@@ -175,8 +175,8 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
           
           <div className="flex items-center justify-between mb-4">
-            <div className="w-16 h-16 bg-gray-200 rounded border flex items-center justify-center">
-              <QrCode className="h-6 w-6 text-gray-500" />
+            <div className="w-16 h-16 bg-green-50 border-2 border-green-200 rounded flex items-center justify-center">
+              <QrCode className="h-6 w-6 text-green-600" />
             </div>
             <div className="text-xs text-gray-600 text-right flex-1 ml-3">
               <p className="mb-2">
@@ -186,11 +186,11 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
             </div>
           </div>
           
-          <div className="border-t border-gray-300 pt-3">
+          <div className="border-t border-green-200 pt-3">
             <div className="flex justify-between text-xs">
               <div>
                 <p className="text-gray-600 mb-1">Authorized Signatory</p>
-                <div className="w-20 h-8 border-b border-gray-400">
+                <div className="w-20 h-8 border-b border-green-400">
                   {settings && settings.signatureUrl && (
                     <img 
                       src={settings?.signatureUrl || ''} 
@@ -202,7 +202,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
               </div>
               <div>
                 <p className="text-gray-600 mb-1">Member Signature</p>
-                <div className="w-20 h-8 border-b border-gray-400"></div>
+                <div className="w-20 h-8 border-b border-green-400"></div>
               </div>
             </div>
           </div>
