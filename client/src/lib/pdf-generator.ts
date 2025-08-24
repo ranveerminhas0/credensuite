@@ -20,13 +20,13 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
           <title>ID Card - ${member.fullName}</title>
           <style>
             @page {
-              size: 3.375in 2.125in;
+              size: 2.051in 3.303in;
               margin: 0;
             }
             @media print {
               .card {
-                width: 3.375in !important;
-                height: 2.125in !important;
+                width: 2.051in !important;
+                height: 3.303in !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 page-break-after: always;
@@ -39,294 +39,474 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
               background: white;
             }
             .card {
-              width: 3.375in;
-              height: 2.125in;
-              background: linear-gradient(135deg, #1e40af, #3b82f6);
-              color: white;
-              padding: 8px;
-              box-sizing: border-box;
+              width: 2.051in;
+              height: 3.303in;
+              background: white;
+              border: 1px solid #d1d5db;
+              border-radius: 8px;
+              overflow: hidden;
               page-break-after: always;
-              border-radius: 12px;
               position: relative;
-              display: flex;
-              flex-direction: column;
-              border: 3px solid #1e40af;
               box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             }
-            .card-header {
+            
+            /* Front Side Styles */
+            .card-front {
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            }
+            .header-pattern {
+              height: 64px;
+              background: linear-gradient(to right, #10b981, #059669);
+              position: relative;
+              overflow: hidden;
+            }
+            .header-pattern::before {
+              content: '';
+              position: absolute;
+              inset: 0;
+              background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.2), transparent);
+            }
+            .header-pattern svg {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 96px;
+              height: 64px;
+            }
+            .header-content {
+              position: relative;
+              z-index: 10;
+              padding: 8px;
               display: flex;
               justify-content: space-between;
               align-items: flex-start;
-              margin-bottom: 6px;
-              height: 35px;
+              color: white;
             }
-            .logo {
+            .logo-circle {
               width: 32px;
               height: 32px;
-              background: linear-gradient(45deg, #ffffff, #f8fafc);
+              background: rgba(255, 255, 255, 0.2);
               border-radius: 50%;
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: 14px;
-              color: #1e40af;
-              font-weight: bold;
-              border: 2px solid white;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+              backdrop-filter: blur(4px);
             }
             .org-info {
               text-align: right;
-              font-size: 8px;
-              line-height: 1.1;
-              max-width: 130px;
             }
             .org-name {
-              font-weight: bold;
               font-size: 10px;
-              margin-bottom: 1px;
-              text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+              font-weight: bold;
+              line-height: 1.2;
             }
-            .member-section {
-              display: flex;
-              align-items: center;
-              margin-bottom: 6px;
+            .volunteer-id {
+              font-size: 8px;
+              opacity: 0.9;
+              font-weight: 500;
+              letter-spacing: 0.05em;
+            }
+            
+            .member-info {
+              padding: 12px;
+              margin-top: -16px;
+              position: relative;
+              z-index: 20;
               flex: 1;
             }
-            .photo {
+            .member-row {
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+            }
+            .photo-container {
+              position: relative;
+            }
+            .photo-frame {
               width: 64px;
               height: 64px;
-              background: #ffffff;
-              border-radius: 8px;
-              margin-right: 8px;
+              border-radius: 50%;
+              background: linear-gradient(to bottom right, #d1fae5, #a7f3d0);
+              padding: 4px;
+            }
+            .photo {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background: #e5e7eb;
               object-fit: cover;
-              border: 3px solid white;
-              box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-            }
-            .member-details {
-              flex: 1;
-            }
-            .member-details h3 {
-              margin: 0 0 3px 0;
-              font-size: 15px;
-              font-weight: bold;
-              text-transform: uppercase;
-              letter-spacing: 0.3px;
-              text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-              line-height: 1.1;
-            }
-            .member-details .role {
-              margin: 0 0 2px 0;
-              font-size: 10px;
-              opacity: 0.95;
-              text-transform: capitalize;
-              background: rgba(255,255,255,0.2);
-              padding: 1px 4px;
-              border-radius: 3px;
-              display: inline-block;
-            }
-            .member-details .id {
-              margin: 0;
-              font-size: 9px;
-              opacity: 0.85;
-              font-weight: bold;
-              font-family: 'Courier New', monospace;
-            }
-            .card-footer {
-              margin-top: auto;
-              font-size: 7px;
-              border-top: 1px solid rgba(255,255,255,0.4);
-              padding-top: 4px;
-              background: rgba(0,0,0,0.1);
-              margin-left: -8px;
-              margin-right: -8px;
-              margin-bottom: -8px;
-              padding-left: 8px;
-              padding-right: 8px;
-              padding-bottom: 4px;
-              border-radius: 0 0 9px 9px;
-            }
-            .footer-row {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 1px;
-            }
-            .footer-label {
-              opacity: 0.85;
-              font-weight: 500;
-            }
-            .footer-value {
-              font-weight: bold;
-              text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-            }
-            .card-back {
-              background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-              color: #1e293b;
-              border: 3px solid #1e40af;
-              border-radius: 12px;
-              padding: 8px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            }
-            .back-header {
-              text-align: center;
-              margin-bottom: 8px;
-              font-size: 8px;
-              line-height: 1.2;
-              border-bottom: 2px solid #1e40af;
-              padding-bottom: 6px;
-              background: linear-gradient(90deg, #dbeafe, #bfdbfe, #dbeafe);
-              margin-left: -8px;
-              margin-right: -8px;
-              margin-top: -8px;
-              padding-left: 8px;
-              padding-right: 8px;
-              padding-top: 8px;
-              border-radius: 9px 9px 0 0;
-            }
-            .back-org-name {
-              font-weight: bold;
-              font-size: 10px;
-              color: #1e40af;
-              margin-bottom: 2px;
-              text-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            }
-            .emergency-section {
-              border-top: 1px solid #ccc;
-              padding-top: 8px;
-              margin-bottom: 8px;
-              font-size: 8px;
-            }
-            .emergency-title {
-              font-weight: bold;
-              margin-bottom: 4px;
-              color: #dc2626;
-            }
-            .qr-section {
-              display: flex;
-              align-items: center;
-              margin-bottom: 6px;
-              border-top: 1px solid #cbd5e1;
-              padding-top: 6px;
-            }
-            .qr-code {
-              width: 40px;
-              height: 40px;
-              background: linear-gradient(45deg, #ffffff, #f8fafc);
-              border: 2px solid #1e40af;
-              margin-right: 8px;
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: 6px;
+              color: #6b7280;
+              font-size: 12px;
+            }
+            .status-indicator {
+              position: absolute;
+              bottom: -4px;
+              right: -4px;
+              width: 16px;
+              height: 16px;
+              background: #10b981;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .status-dot {
+              width: 6px;
+              height: 6px;
+              background: white;
+              border-radius: 50%;
+            }
+            .member-details {
+              flex: 1;
+              padding-top: 4px;
+            }
+            .member-name {
+              font-size: 14px;
               font-weight: bold;
-              border-radius: 6px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-              flex-shrink: 0;
+              color: #1f2937;
+              line-height: 1.2;
+              margin-bottom: 2px;
             }
-            .declaration {
-              font-size: 7px;
-              line-height: 1.4;
+            .member-designation {
+              font-size: 10px;
+              color: #10b981;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              margin-bottom: 4px;
             }
-            .declaration-title {
-              font-weight: bold;
-              margin-bottom: 3px;
+            .member-id {
+              background: #d1fae5;
+              color: #047857;
+              padding: 2px 8px;
+              border-radius: 4px;
+              font-size: 10px;
+              font-family: 'Courier New', monospace;
+              display: inline-block;
             }
-            .signature-section {
-              border-top: 2px solid #1e40af;
-              padding-top: 6px;
+            
+            .details-section {
+              padding: 0 12px 12px;
+            }
+            .details-box {
+              background: #f9fafb;
+              border-radius: 8px;
+              padding: 8px;
+            }
+            .detail-row {
               display: flex;
               justify-content: space-between;
-              font-size: 6px;
-              background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);
-              margin-left: -8px;
-              margin-right: -8px;
-              margin-bottom: -8px;
-              padding-left: 8px;
-              padding-right: 8px;
-              padding-bottom: 6px;
-              border-radius: 0 0 9px 9px;
+              align-items: center;
+              font-size: 10px;
+              margin-bottom: 6px;
+            }
+            .detail-row:last-child {
+              margin-bottom: 0;
+            }
+            .detail-label {
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .detail-value {
+              color: #1f2937;
+              font-weight: 600;
+            }
+            .blood-group {
+              color: #10b981 !important;
+              font-weight: bold !important;
+            }
+            .detail-divider {
+              height: 1px;
+              background: #e5e7eb;
+              margin: 6px 0;
+            }
+            
+            /* Back Side Styles */
+            .card-back {
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            }
+            .back-header {
+              background: linear-gradient(to right, #d1fae5, #a7f3d0);
+              padding: 8px;
+              border-bottom: 1px solid #d1fae5;
+              text-align: center;
+            }
+            .back-org-name {
+              font-size: 12px;
+              font-weight: bold;
+              color: #1f2937;
+              margin-bottom: 4px;
+            }
+            .back-address {
+              font-size: 8px;
+              color: #6b7280;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 4px;
+              margin-bottom: 2px;
+            }
+            .address-dot {
+              width: 4px;
+              height: 4px;
+              background: #10b981;
+              border-radius: 50%;
+            }
+            
+            .emergency-section {
+              padding: 8px;
+              border-bottom: 1px solid #f3f4f6;
+            }
+            .emergency-box {
+              background: #f9fafb;
+              border-radius: 8px;
+              padding: 8px;
+            }
+            .emergency-title {
+              font-size: 10px;
+              font-weight: 600;
+              color: #1f2937;
+              margin-bottom: 8px;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
+            .emergency-indicator {
+              width: 6px;
+              height: 6px;
+              background: #ef4444;
+              border-radius: 50%;
+            }
+            .emergency-row {
+              display: flex;
+              justify-content: space-between;
+              font-size: 10px;
+              margin-bottom: 4px;
+            }
+            .emergency-row:last-child {
+              margin-bottom: 0;
+            }
+            .emergency-label {
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .emergency-value {
+              color: #1f2937;
+              font-weight: 600;
+              text-align: right;
+              flex: 1;
+              margin-left: 8px;
+            }
+            
+            .qr-section {
+              padding: 8px;
+              border-bottom: 1px solid #f3f4f6;
+            }
+            .qr-row {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .qr-code {
+              width: 48px;
+              height: 48px;
+              background: linear-gradient(to bottom right, #d1fae5, #a7f3d0);
+              border: 2px solid #d1fae5;
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+            }
+            .qr-icon {
+              font-size: 16px;
+              color: #10b981;
+            }
+            .qr-text {
+              flex: 1;
+            }
+            .qr-title {
+              font-size: 10px;
+              color: #1f2937;
+              font-weight: 600;
+              margin-bottom: 2px;
+            }
+            .qr-description {
+              font-size: 8px;
+              color: #6b7280;
+              line-height: 1.3;
+            }
+            
+            .signature-section {
+              padding: 8px;
+              margin-top: auto;
+            }
+            .signature-row {
+              display: flex;
+              justify-content: space-between;
+              gap: 8px;
             }
             .signature-box {
-              width: 65px;
-              border-bottom: 2px solid #1e40af;
-              height: 16px;
-              margin-top: 3px;
+              flex: 1;
             }
             .signature-label {
-              font-weight: bold;
-              margin-bottom: 1px;
-              color: #1e40af;
+              font-size: 8px;
+              color: #6b7280;
+              font-weight: 500;
+              margin-bottom: 4px;
+            }
+            .signature-line {
+              width: 100%;
+              height: 24px;
+              border-bottom: 2px dotted #10b981;
+              display: flex;
+              align-items: end;
+            }
+            .validity-note {
+              margin-top: 8px;
+              text-align: center;
+            }
+            .validity-text {
+              font-size: 8px;
+              color: #6b7280;
+              font-style: italic;
             }
           </style>
         </head>
         <body>
           <!-- Front Side -->
           <div class="card">
-            <div class="card-header">
-              <div class="logo">NGO</div>
-              <div class="org-info">
-                <div class="org-name">${settings.organizationName || 'Hope Foundation NGO'}</div>
-                <div>MEMBER IDENTIFICATION CARD</div>
-                <div>Est. 2020</div>
+            <div class="card-front">
+              <div class="header-pattern">
+                <svg viewBox="0 0 100 60">
+                  <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
+                  <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
+                </svg>
+                <div class="header-content">
+                  <div class="logo-circle">
+                    ${settings.logoUrl ? `<img src="${settings.logoUrl}" style="width:20px;height:20px;border-radius:50%;object-fit:contain;">` : '♥'}
+                  </div>
+                  <div class="org-info">
+                    <div class="org-name">${settings.organizationName || 'Your NGO Name'}</div>
+                    <div class="volunteer-id">VOLUNTEER ID</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="member-section">
-              ${photoUrl ? `<img src="${photoUrl}" alt="Photo" class="photo">` : '<div class="photo"></div>'}
-              <div class="member-details">
-                <h3>${member.fullName}</h3>
-                <p class="role">${member.designation}</p>
-                <p class="id">ID: ${member.memberId}</p>
+              
+              <div class="member-info">
+                <div class="member-row">
+                  <div class="photo-container">
+                    <div class="photo-frame">
+                      <div class="photo">
+                        ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 'Photo'}
+                      </div>
+                    </div>
+                    <div class="status-indicator">
+                      <div class="status-dot"></div>
+                    </div>
+                  </div>
+                  <div class="member-details">
+                    <div class="member-name">${member.fullName}</div>
+                    <div class="member-designation">${member.designation}</div>
+                    <div class="member-id">${member.memberId}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="card-footer">
-              <div class="footer-row">
-                <span class="footer-label">Joined:</span>
-                <span class="footer-value">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+              
+              <div class="details-section">
+                <div class="details-box">
+                  <div class="detail-row">
+                    <span class="detail-label">Joining Date:</span>
+                    <span class="detail-value">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                  </div>
+                  <div class="detail-divider"></div>
+                  <div class="detail-row">
+                    <span class="detail-label">Contact:</span>
+                    <span class="detail-value">${member.contactNumber}</span>
+                  </div>
+                  <div class="detail-divider"></div>
+                  <div class="detail-row">
+                    <span class="detail-label">Blood Group:</span>
+                    <span class="detail-value blood-group">${member.bloodGroup || 'N/A'}</span>
+                  </div>
+                </div>
               </div>
-              <div class="footer-row">
-                <span class="footer-label">Contact:</span>
-                <span class="footer-value">${member.contactNumber}</span>
-              </div>
-              ${member.bloodGroup ? `<div class="footer-row"><span class="footer-label">Blood:</span><span class="footer-value">${member.bloodGroup}</span></div>` : ''}
             </div>
           </div>
 
           <!-- Back Side -->
-          <div class="card card-back">
-            <div class="back-header">
-              <div class="back-org-name">${settings.organizationName || 'Hope Foundation NGO'}</div>
-              <div>${settings.address || '123 Main Street, City, State 12345'}</div>
-              <div>Phone: ${settings.phoneNumber || '(555) 123-4567'} | Email: ${settings.emailAddress || 'info@hopefoundation.org'}</div>
-              <div>Website: ${settings.website || 'www.hopefoundation.org'}</div>
-            </div>
-            
-            ${member.emergencyContactName || member.emergencyContactNumber ? `
-              <div class="emergency-section">
-                <div class="emergency-title">Emergency Contact:</div>
-                ${member.emergencyContactName ? `<div><strong>Name:</strong> ${member.emergencyContactName}</div>` : ''}
-                ${member.emergencyContactNumber ? `<div><strong>Phone:</strong> ${member.emergencyContactNumber}</div>` : ''}
+          <div class="card">
+            <div class="card-back">
+              <div class="back-header">
+                <div class="back-org-name">${settings.organizationName || 'Your NGO Name'}</div>
+                <div class="back-address">
+                  <span class="address-dot"></span>
+                  <span>${settings.address || '123 Main Street, City, State 12345'}</span>
+                </div>
+                <div class="back-address">
+                  <span class="address-dot"></span>
+                  <span>${settings.phoneNumber || '(555) 123-4567'} | ${settings.emailAddress || 'info@yourorg.org'}</span>
+                </div>
               </div>
-            ` : ''}
-            
-            <div class="qr-section">
-              <div class="qr-code">QR<br>CODE</div>
-              <div class="declaration">
-                <div class="declaration-title">IMPORTANT NOTICE:</div>
-                <div>This card is the exclusive property of ${settings.organizationName || 'Hope Foundation NGO'}.</div>
-                <div>If found, please return to the address above or contact us immediately.</div>
-                <div>Valid only with photo identification.</div>
+              
+              ${member.emergencyContactName || member.emergencyContactNumber ? `
+                <div class="emergency-section">
+                  <div class="emergency-box">
+                    <div class="emergency-title">
+                      <span class="emergency-indicator"></span>
+                      Emergency Contact
+                    </div>
+                    ${member.emergencyContactName ? `
+                      <div class="emergency-row">
+                        <span class="emergency-label">Name:</span>
+                        <span class="emergency-value">${member.emergencyContactName}</span>
+                      </div>
+                    ` : ''}
+                    ${member.emergencyContactNumber ? `
+                      <div class="emergency-row">
+                        <span class="emergency-label">Phone:</span>
+                        <span class="emergency-value">${member.emergencyContactNumber}</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
+              
+              <div class="qr-section">
+                <div class="qr-row">
+                  <div class="qr-code">
+                    <div class="qr-icon">⧈</div>
+                  </div>
+                  <div class="qr-text">
+                    <div class="qr-title">Property of ${settings.organizationName || 'Your NGO'}</div>
+                    <div class="qr-description">If found, please return to the above address or contact us immediately.</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="signature-section">
-              <div>
-                <div class="signature-label">Authorized Officer</div>
-                <div class="signature-box"></div>
-              </div>
-              <div>
-                <div class="signature-label">Member Signature</div>
-                <div class="signature-box"></div>
+              
+              <div class="signature-section">
+                <div class="signature-row">
+                  <div class="signature-box">
+                    <div class="signature-label">Authorized Signatory</div>
+                    <div class="signature-line">
+                      ${settings.signatureUrl ? `<img src="${settings.signatureUrl}" style="height:100%;object-fit:contain;">` : ''}
+                    </div>
+                  </div>
+                  <div class="signature-box">
+                    <div class="signature-label">Member Signature</div>
+                    <div class="signature-line"></div>
+                  </div>
+                </div>
+                <div class="validity-note">
+                  <div class="validity-text">Valid with authorized signature only</div>
+                </div>
               </div>
             </div>
           </div>
