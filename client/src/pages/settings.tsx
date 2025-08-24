@@ -204,6 +204,24 @@ export default function Settings() {
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="qrCodePattern"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>QR Code URL Pattern</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="https://verify.yourorg.com/{id}"
+                          data-testid="input-qr-pattern"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <Button 
                   type="submit" 
                   className="w-full"
@@ -254,30 +272,16 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* QR Code Settings */}
+        {/* QR Code Info */}
         <Card>
           <CardHeader>
             <CardTitle>QR Code Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="qrCodePattern"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>QR Code URL Pattern</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="https://verify.yourorg.com/{id}"
-                        data-testid="input-qr-pattern"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <p className="text-sm text-gray-600">
+                QR Code pattern is configured in the main form. Each member card will generate a unique QR code.
+              </p>
               
               <Button variant="secondary" className="w-full" data-testid="test-qr">
                 <QrCode className="mr-2 h-4 w-4" />

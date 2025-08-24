@@ -10,6 +10,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Member } from "@shared/schema";
 import { Download, Plus, Eye, Edit, Search, Filter, User } from "lucide-react";
 import { Link } from "wouter";
+import { generatePDF } from "@/lib/pdf-generator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Members() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,6 +66,112 @@ export default function Members() {
       deleteMutation.mutate(id);
     }
   };
+
+  const handleGeneratePDF = async (member: Member) => {
+    try {
+      await generatePDF(member);
+      toast({
+        title: "Success",
+        description: "ID card PDF generated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
+  function ViewMemberDialog({ member }: { member: Member }) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            data-testid={`view-member-${member.id}`}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Member Details</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                {member.photoUrl ? (
+                  <img 
+                    src={member.photoUrl} 
+                    alt={member.fullName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="h-8 w-8 text-gray-500" />
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">{member.fullName}</h3>
+                <p className="text-sm text-gray-600 capitalize">{member.designation}</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-600">Member ID:</span>
+                <p>{member.memberId}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Contact:</span>
+                <p>{member.contactNumber}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Joining Date:</span>
+                <p>{new Date(member.joiningDate).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Status:</span>
+                <Badge variant={member.isActive ? "default" : "secondary"}>
+                  {member.isActive ? "Active" : "Inactive"}
+                </Badge>
+              </div>
+              {member.bloodGroup && (
+                <div>
+                  <span className="font-medium text-gray-600">Blood Group:</span>
+                  <p>{member.bloodGroup}</p>
+                </div>
+              )}
+              {member.emergencyContactName && (
+                <div>
+                  <span className="font-medium text-gray-600">Emergency Contact:</span>
+                  <p>{member.emergencyContactName}</p>
+                </div>
+              )}
+              {member.emergencyContactNumber && (
+                <div>
+                  <span className="font-medium text-gray-600">Emergency Phone:</span>
+                  <p>{member.emergencyContactNumber}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-2 pt-4">
+              <Button 
+                onClick={() => handleGeneratePDF(member)} 
+                className="flex-1"
+                data-testid="download-pdf-from-view"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download ID Card
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -231,19 +339,14 @@ export default function Members() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
+                        <ViewMemberDialog member={member} />
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          data-testid={`view-member-${member.id}`}
+                          onClick={() => handleGeneratePDF(member)}
+                          data-testid={`download-card-${member.id}`}
                         >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          data-testid={`edit-member-${member.id}`}
-                        >
-                          <Edit className="h-4 w-4" />
+                          <Download className="h-4 w-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
@@ -251,7 +354,7 @@ export default function Members() {
                           onClick={() => handleDelete(member.id)}
                           data-testid={`delete-member-${member.id}`}
                         >
-                          <Download className="h-4 w-4" />
+                          <Edit className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
