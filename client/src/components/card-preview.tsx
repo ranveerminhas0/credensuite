@@ -20,65 +20,113 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
   if (!member) {
     return (
       <div className="text-center py-12">
-        <div className="relative bg-white rounded-lg shadow-2xl mx-auto overflow-hidden opacity-50" style={{width: '205px', height: '330px'}}>
-          {/* Geometric Header Pattern */}
-          <div className="relative h-16 bg-gradient-to-r from-emerald-500 to-green-600 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
-            <svg className="absolute top-0 right-0 w-24 h-16" viewBox="0 0 100 60">
-              <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
-              <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
-            </svg>
-            <div className="relative z-10 p-2 flex items-start justify-between text-white">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Heart className="h-4 w-4" />
-              </div>
-              <div className="text-right">
-                <h4 className="text-xs font-bold leading-tight">Your NGO Name</h4>
-                <p className="text-xs opacity-90 font-medium tracking-wider">VOLUNTEER ID</p>
-              </div>
+        <div className="relative bg-white rounded-xl shadow-2xl mx-auto overflow-hidden opacity-50" style={{width: '205px', height: '330px'}}>
+          {/* Complex Geometric Background */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-500 to-teal-600"></div>
+            <div className="absolute inset-0">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 205 330">
+                <defs>
+                  <pattern id="diagonalStripesEmpty" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                    <rect width="20" height="20" fill="transparent"/>
+                    <rect width="1" height="20" fill="rgba(255,255,255,0.05)"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="rgba(16,185,129,0.9)"/>
+                <rect width="100%" height="100%" fill="url(#diagonalStripesEmpty)"/>
+                <circle cx="190" cy="20" r="25" fill="rgba(255,255,255,0.08)"/>
+                <polygon points="0,80 50,60 30,120" fill="rgba(255,255,255,0.06)"/>
+              </svg>
             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10"></div>
           </div>
-          
-          {/* Member Info Section */}
-          <div className="p-3 -mt-4 relative z-20">
-            <div className="flex items-start gap-3">
+
+          {/* Header Section */}
+          <div className="relative z-30 p-3 pt-4">
+            <div className="flex items-start justify-between">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-100 to-green-200 p-1">
-                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    <User className="h-6 w-6 text-gray-500" />
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md p-0.5 shadow-lg">
+                  <div className="w-full h-full rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                </div>
+                <div className="absolute -inset-1 rounded-full border border-white/20"></div>
+                <div className="absolute -inset-2 rounded-full border border-white/10"></div>
               </div>
-              <div className="flex-1 pt-1">
-                <h3 className="font-bold text-lg text-gray-800 leading-tight">Member Name</h3>
-                <p className="text-emerald-600 font-semibold text-xs uppercase tracking-wide">Designation</p>
-                <div className="mt-1 px-2 py-0.5 bg-emerald-50 rounded text-xs font-mono text-emerald-700">
-                  NGO-YYYY-001
+              <div className="text-right text-white max-w-[120px]">
+                <h4 className="text-xs font-bold leading-tight mb-1 drop-shadow-md">Your NGO Name</h4>
+                <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5">
+                  <p className="text-xs font-semibold tracking-wider">VOLUNTEER ID</p>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Details Section */}
-          <div className="px-3 pb-3">
-            <div className="bg-gray-50 rounded-lg p-2 space-y-1.5">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Joining Date:</span>
-                <span className="text-gray-800 font-semibold">Jan 2024</span>
+
+          {/* Member Photo Section */}
+          <div className="relative z-20 flex justify-center -mt-2">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-white/30 to-white/10 p-1 backdrop-blur-sm">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-emerald-200/80 to-green-300/80 p-1">
+                  <div className="w-full h-full rounded-full bg-white overflow-hidden shadow-lg">
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <User className="h-8 w-8 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="h-px bg-gray-200"></div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Contact:</span>
-                <span className="text-gray-800 font-semibold">+1 555-0123</span>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full flex items-center justify-center shadow-md">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
               </div>
-              <div className="h-px bg-gray-200"></div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Blood Group:</span>
-                <span className="text-emerald-600 font-bold">O+</span>
+              <div className="absolute -top-1 -left-1 w-3 h-3 bg-white/60 rounded-full"></div>
+              <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-white/40 rounded-full"></div>
+              <div className="absolute -top-2 -right-1 w-2 h-2 bg-white/50 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Member Details Card */}
+          <div className="relative z-10 mx-3 mt-4 mb-4">
+            <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-white/50">
+              <div className="p-3 pb-2 text-center border-b border-gray-100">
+                <h3 className="font-bold text-base text-gray-800 leading-tight mb-1">Member Name</h3>
+                <div className="inline-block bg-gradient-to-r from-emerald-100 to-green-100 px-3 py-1 rounded-full">
+                  <p className="text-emerald-700 font-semibold text-xs uppercase tracking-wide">Designation</p>
+                </div>
               </div>
+              <div className="px-3 pt-2 pb-1 text-center">
+                <div className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-white px-3 py-1 rounded-lg shadow-md">
+                  <p className="text-xs font-mono font-bold tracking-wider">NGO-YYYY-001</p>
+                </div>
+              </div>
+              <div className="p-3 pt-2 space-y-2">
+                <div className="flex justify-between items-center py-1.5 px-2 bg-gray-50 rounded-lg">
+                  <span className="text-xs text-gray-600 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                    Joining Date
+                  </span>
+                  <span className="text-xs text-gray-800 font-bold">Jan 2024</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 px-2 bg-emerald-50 rounded-lg">
+                  <span className="text-xs text-emerald-700 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
+                    Contact
+                  </span>
+                  <span className="text-xs text-emerald-800 font-bold">+1 555-0123</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 px-2 bg-red-50 rounded-lg">
+                  <span className="text-xs text-red-700 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                    Blood Group
+                  </span>
+                  <span className="text-xs text-red-800 font-bold">O+</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Decorative Elements */}
+          <div className="absolute bottom-0 left-0 right-0 h-3">
+            <div className="bg-gradient-to-r from-emerald-700 via-green-600 to-teal-700 h-full">
+              <div className="h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
             </div>
           </div>
         </div>
@@ -111,90 +159,183 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
 
       {/* Card Front Side */}
       {!showBack && (
-        <div className="relative bg-white rounded-lg shadow-2xl mx-auto overflow-hidden border border-gray-100" style={{width: '205px', height: '330px'}} data-testid="card-front">
-          {/* Geometric Header Pattern */}
-          <div className="relative h-16 bg-gradient-to-r from-emerald-500 to-green-600 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
-            <svg className="absolute top-0 right-0 w-24 h-16" viewBox="0 0 100 60">
-              <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
-              <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
-            </svg>
-            <div className="relative z-10 p-2 flex items-start justify-between text-white">
-              {settings && settings.logoUrl ? (
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm p-1">
-                  <img 
-                    src={settings?.logoUrl || ''} 
-                    alt="NGO Logo"
-                    className="w-full h-full object-contain rounded-full"
-                  />
+        <div className="relative bg-white rounded-xl shadow-2xl mx-auto overflow-hidden border border-gray-100" style={{width: '205px', height: '330px'}} data-testid="card-front">
+          {/* Complex Geometric Background */}
+          <div className="absolute inset-0">
+            {/* Base gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-500 to-teal-600"></div>
+            
+            {/* Geometric overlays */}
+            <div className="absolute inset-0">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 205 330">
+                {/* Diagonal stripes */}
+                <defs>
+                  <pattern id="diagonalStripes" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                    <rect width="20" height="20" fill="transparent"/>
+                    <rect width="1" height="20" fill="rgba(255,255,255,0.05)"/>
+                  </pattern>
+                  <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(16,185,129,0.9)"/>
+                    <stop offset="50%" stopColor="rgba(5,150,105,0.95)"/>
+                    <stop offset="100%" stopColor="rgba(6,78,59,0.9)"/>
+                  </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#cardGradient)"/>
+                <rect width="100%" height="100%" fill="url(#diagonalStripes)"/>
+                
+                {/* Decorative geometric shapes */}
+                <circle cx="190" cy="20" r="25" fill="rgba(255,255,255,0.08)"/>
+                <circle cx="200" cy="30" r="15" fill="rgba(255,255,255,0.05)"/>
+                <polygon points="0,80 50,60 30,120" fill="rgba(255,255,255,0.06)"/>
+                <polygon points="170,100 205,90 205,130 180,140" fill="rgba(255,255,255,0.04)"/>
+                <polygon points="0,200 40,180 20,240 0,230" fill="rgba(255,255,255,0.05)"/>
+                
+                {/* Curved elements */}
+                <path d="M 0,150 Q 50,120 100,150 T 205,140 L 205,160 Q 150,170 100,160 T 0,170 Z" fill="rgba(255,255,255,0.06)"/>
+              </svg>
+            </div>
+            
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10"></div>
+          </div>
+
+          {/* Header Section with Logo and Org Info */}
+          <div className="relative z-30 p-3 pt-4">
+            <div className="flex items-start justify-between">
+              {/* Logo with decorative frame */}
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md p-0.5 shadow-lg">
+                  <div className="w-full h-full rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                    {settings && settings.logoUrl ? (
+                      <img 
+                        src={settings?.logoUrl || ''} 
+                        alt="NGO Logo"
+                        className="w-8 h-8 object-contain rounded-full"
+                      />
+                    ) : (
+                      <Heart className="h-6 w-6 text-white" />
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <Heart className="h-4 w-4" />
-                </div>
-              )}
-              <div className="text-right">
-                <h4 className="text-xs font-bold leading-tight">
+                {/* Decorative rings */}
+                <div className="absolute -inset-1 rounded-full border border-white/20"></div>
+                <div className="absolute -inset-2 rounded-full border border-white/10"></div>
+              </div>
+              
+              {/* Organization Info */}
+              <div className="text-right text-white max-w-[120px]">
+                <h4 className="text-xs font-bold leading-tight mb-1 drop-shadow-md">
                   {settings?.organizationName || "Your NGO Name"}
                 </h4>
-                <p className="text-xs opacity-90 font-medium tracking-wider">VOLUNTEER ID</p>
+                <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5">
+                  <p className="text-xs font-semibold tracking-wider">VOLUNTEER ID</p>
+                </div>
               </div>
             </div>
           </div>
-          
-          {/* Member Info Section */}
-          <div className="p-3 -mt-4 relative z-20">
-            <div className="flex items-start gap-3">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-100 to-green-200 p-1">
-                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+
+          {/* Member Photo Section with Creative Frame */}
+          <div className="relative z-20 flex justify-center -mt-2">
+            <div className="relative">
+              {/* Outer decorative ring */}
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-white/30 to-white/10 p-1 backdrop-blur-sm">
+                {/* Inner decorative ring */}
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-emerald-200/80 to-green-300/80 p-1">
+                  {/* Photo container */}
+                  <div className="w-full h-full rounded-full bg-white overflow-hidden shadow-lg">
                     {photoUrl ? (
                       <img 
                         src={photoUrl} 
                         alt="Member photo"
-                        className="w-full h-full object-cover rounded-full"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="h-6 w-6 text-gray-500" />
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <User className="h-8 w-8 text-gray-400" />
+                      </div>
                     )}
                   </div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+              </div>
+              
+              {/* Status indicators */}
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full flex items-center justify-center shadow-md">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              
+              {/* Decorative elements around photo */}
+              <div className="absolute -top-1 -left-1 w-3 h-3 bg-white/60 rounded-full"></div>
+              <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-white/40 rounded-full"></div>
+              <div className="absolute -top-2 -right-1 w-2 h-2 bg-white/50 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Member Details Card */}
+          <div className="relative z-10 mx-3 mt-4 mb-4">
+            <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-white/50">
+              {/* Name and Designation */}
+              <div className="p-3 pb-2 text-center border-b border-gray-100">
+                <h3 className="font-bold text-base text-gray-800 leading-tight mb-1">
+                  {member.fullName || "Member Name"}
+                </h3>
+                <div className="inline-block bg-gradient-to-r from-emerald-100 to-green-100 px-3 py-1 rounded-full">
+                  <p className="text-emerald-700 font-semibold text-xs uppercase tracking-wide">
+                    {member.designation || "Designation"}
+                  </p>
                 </div>
               </div>
-              <div className="flex-1 pt-1">
-                <h3 className="font-bold text-lg text-gray-800 leading-tight">{member.fullName || "Member Name"}</h3>
-                <p className="text-emerald-600 font-semibold text-xs uppercase tracking-wide capitalize">{member.designation || "Designation"}</p>
-                <div className="mt-1 px-2 py-0.5 bg-emerald-50 rounded text-xs font-mono text-emerald-700">
-                  {member.memberId || "NGO-YYYY-001"}
+              
+              {/* Member ID with decorative styling */}
+              <div className="px-3 pt-2 pb-1 text-center">
+                <div className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-white px-3 py-1 rounded-lg shadow-md">
+                  <p className="text-xs font-mono font-bold tracking-wider">
+                    {member.memberId || "NGO-YYYY-001"}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Details Grid */}
+              <div className="p-3 pt-2 space-y-2">
+                <div className="flex justify-between items-center py-1.5 px-2 bg-gray-50 rounded-lg">
+                  <span className="text-xs text-gray-600 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                    Joining Date
+                  </span>
+                  <span className="text-xs text-gray-800 font-bold">
+                    {member.joiningDate 
+                      ? new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                      : "Jan 2024"
+                    }
+                  </span>
+                </div>
+                
+                <div className="flex justify-between items-center py-1.5 px-2 bg-emerald-50 rounded-lg">
+                  <span className="text-xs text-emerald-700 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
+                    Contact
+                  </span>
+                  <span className="text-xs text-emerald-800 font-bold">
+                    {member.contactNumber || "+1 555-0123"}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between items-center py-1.5 px-2 bg-red-50 rounded-lg">
+                  <span className="text-xs text-red-700 font-medium flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                    Blood Group
+                  </span>
+                  <span className="text-xs text-red-800 font-bold">
+                    {member.bloodGroup || "O+"}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Details Section */}
-          <div className="px-3 pb-3">
-            <div className="bg-gray-50 rounded-lg p-2 space-y-1.5">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Joining Date:</span>
-                <span className="text-gray-800 font-semibold">
-                  {member.joiningDate 
-                    ? new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                    : "Jan 2024"
-                  }
-                </span>
-              </div>
-              <div className="h-px bg-gray-200"></div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Contact:</span>
-                <span className="text-gray-800 font-semibold">{member.contactNumber || "+1 555-0123"}</span>
-              </div>
-              <div className="h-px bg-gray-200"></div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600 font-medium">Blood Group:</span>
-                <span className="text-emerald-600 font-bold">{member.bloodGroup || "O+"}</span>
-              </div>
+
+          {/* Bottom Decorative Elements */}
+          <div className="absolute bottom-0 left-0 right-0 h-3">
+            <div className="bg-gradient-to-r from-emerald-700 via-green-600 to-teal-700 h-full">
+              <div className="h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
             </div>
           </div>
         </div>

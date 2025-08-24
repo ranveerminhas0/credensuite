@@ -25,63 +25,165 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
     container.innerHTML = `
       <div style="display: flex; gap: 20px; flex-direction: column;">
         <!-- Front Side -->
-        <div id="card-front" style="width: ${cardWidth}px; height: ${cardHeight}px; background: white; border: 3px solid #d1d5db; border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 12px 36px rgba(0,0,0,0.15); font-family: Arial, sans-serif;">
-          <!-- Header Pattern -->
-          <div style="height: 192px; background: linear-gradient(to right, #10b981, #059669); position: relative; overflow: hidden;">
-            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.2), transparent);"></div>
-            <svg style="position: absolute; top: 0; right: 0; width: 288px; height: 192px;" viewBox="0 0 100 60">
-              <polygon points="70,0 100,0 100,30" fill="rgba(255,255,255,0.1)" />
-              <polygon points="85,15 100,15 100,45" fill="rgba(255,255,255,0.05)" />
+        <div id="card-front" style="width: ${cardWidth}px; height: ${cardHeight}px; background: white; border: 3px solid #d1d5db; border-radius: 36px; overflow: hidden; position: relative; box-shadow: 0 36px 108px rgba(0,0,0,0.15); font-family: Arial, sans-serif;">
+          <!-- Complex Geometric Background -->
+          <div style="position: absolute; inset: 0;">
+            <!-- Base gradient -->
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom right, #059669, #10b981, #0d9488);"></div>
+            
+            <!-- Geometric overlays -->
+            <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 615 991">
+              <defs>
+                <pattern id="diagonalStripes" patternUnits="userSpaceOnUse" width="60" height="60" patternTransform="rotate(45)">
+                  <rect width="60" height="60" fill="transparent"/>
+                  <rect width="3" height="60" fill="rgba(255,255,255,0.05)"/>
+                </pattern>
+                <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.9)"/>
+                  <stop offset="50%" stop-color="rgba(5,150,105,0.95)"/>
+                  <stop offset="100%" stop-color="rgba(6,78,59,0.9)"/>
+                </linearGradient>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#cardGradient)"/>
+              <rect width="100%" height="100%" fill="url(#diagonalStripes)"/>
+              
+              <!-- Decorative geometric shapes -->
+              <circle cx="570" cy="60" r="75" fill="rgba(255,255,255,0.08)"/>
+              <circle cx="600" cy="90" r="45" fill="rgba(255,255,255,0.05)"/>
+              <polygon points="0,240 150,180 90,360" fill="rgba(255,255,255,0.06)"/>
+              <polygon points="510,300 615,270 615,390 540,420" fill="rgba(255,255,255,0.04)"/>
+              <polygon points="0,600 120,540 60,720 0,690" fill="rgba(255,255,255,0.05)"/>
+              
+              <!-- Curved elements -->
+              <path d="M 0,450 Q 150,360 300,450 T 615,420 L 615,480 Q 450,510 300,480 T 0,510 Z" fill="rgba(255,255,255,0.06)"/>
             </svg>
-            <div style="position: relative; z-index: 10; padding: 24px; display: flex; justify-content: space-between; align-items: flex-start; color: white;">
-              <div style="width: 96px; height: 96px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-size: 32px;">
-                ${settings.logoUrl ? `<img src="${settings.logoUrl}" style="width:60px;height:60px;border-radius:50%;object-fit:contain;">` : '♥'}
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 30px; font-weight: bold; line-height: 1.2; margin-bottom: 6px;">${settings.organizationName || 'Your NGO Name'}</div>
-                <div style="font-size: 24px; opacity: 0.9; font-weight: 500; letter-spacing: 0.15em;">VOLUNTEER ID</div>
-              </div>
-            </div>
+            
+            <!-- Gradient overlay -->
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.2), transparent, rgba(255,255,255,0.1));"></div>
           </div>
-          
-          <!-- Member Info -->
-          <div style="padding: 36px; margin-top: -48px; position: relative; z-index: 20; flex: 1;">
-            <div style="display: flex; align-items: flex-start; gap: 36px;">
+
+          <!-- Header Section with Logo and Org Info -->
+          <div style="position: relative; z-index: 30; padding: 36px; padding-top: 48px;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+              <!-- Logo with decorative frame -->
               <div style="position: relative;">
-                <div style="width: 192px; height: 192px; border-radius: 50%; background: linear-gradient(to bottom right, #d1fae5, #a7f3d0); padding: 12px;">
-                  <div style="width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 48px; overflow: hidden;">
-                    ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : 'Photo'}
+                <div style="width: 144px; height: 144px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); padding: 6px; box-shadow: 0 24px 72px rgba(0,0,0,0.2);">
+                  <div style="width: 100%; height: 100%; border-radius: 50%; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center;">
+                    ${settings.logoUrl ? `<img src="${settings.logoUrl}" style="width:96px;height:96px;border-radius:50%;object-fit:contain;">` : '<div style="font-size:72px;color:white;">♥</div>'}
                   </div>
                 </div>
-                <div style="position: absolute; bottom: -12px; right: -12px; width: 48px; height: 48px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 18px; height: 18px; background: white; border-radius: 50%;"></div>
-                </div>
+                <!-- Decorative rings -->
+                <div style="position: absolute; inset: -12px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);"></div>
+                <div style="position: absolute; inset: -24px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1);"></div>
               </div>
-              <div style="flex: 1; padding-top: 12px;">
-                <div style="font-size: 54px; font-weight: bold; color: #1f2937; line-height: 1.2; margin-bottom: 12px;">${member.fullName}</div>
-                <div style="font-size: 30px; color: #10b981; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 18px;">${member.designation}</div>
-                <div style="background: #d1fae5; color: #047857; padding: 9px 24px; border-radius: 12px; font-size: 30px; font-family: 'Courier New', monospace; display: inline-block;">${member.memberId}</div>
+              
+              <!-- Organization Info -->
+              <div style="text-align: right; color: white; max-width: 360px;">
+                <div style="font-size: 36px; font-weight: bold; line-height: 1.2; margin-bottom: 12px; text-shadow: 0 6px 12px rgba(0,0,0,0.3);">
+                  ${settings.organizationName || 'Your NGO Name'}
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(6px); border-radius: 999px; padding: 12px 24px;">
+                  <div style="font-size: 36px; font-weight: 600; letter-spacing: 0.2em;">VOLUNTEER ID</div>
+                </div>
               </div>
             </div>
           </div>
-          
-          <!-- Details Section -->
-          <div style="padding: 0 36px 36px;">
-            <div style="background: #f9fafb; border-radius: 24px; padding: 24px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px; margin-bottom: 18px;">
-                <span style="color: #6b7280; font-weight: 500;">Joining Date:</span>
-                <span style="color: #1f2937; font-weight: 600;">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+
+          <!-- Member Photo Section with Creative Frame -->
+          <div style="position: relative; z-index: 20; display: flex; justify-content: center; margin-top: -24px;">
+            <div style="position: relative;">
+              <!-- Outer decorative ring -->
+              <div style="width: 240px; height: 240px; border-radius: 50%; background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)); padding: 12px; backdrop-filter: blur(6px);">
+                <!-- Inner decorative ring -->
+                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(to bottom right, rgba(209, 250, 229, 0.8), rgba(167, 243, 208, 0.8)); padding: 12px;">
+                  <!-- Photo container -->
+                  <div style="width: 100%; height: 100%; border-radius: 50%; background: white; overflow: hidden; box-shadow: 0 24px 72px rgba(0,0,0,0.2);">
+                    ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="width:100%;height:100%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:96px;">Photo</div>'}
+                  </div>
+                </div>
               </div>
-              <div style="height: 3px; background: #e5e7eb; margin: 18px 0;"></div>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px; margin-bottom: 18px;">
-                <span style="color: #6b7280; font-weight: 500;">Contact:</span>
-                <span style="color: #1f2937; font-weight: 600;">${member.contactNumber}</span>
+              
+              <!-- Status indicators -->
+              <div style="position: absolute; bottom: -12px; right: -12px; width: 60px; height: 60px; background: #34d399; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 36px rgba(0,0,0,0.3);">
+                <div style="width: 24px; height: 24px; background: white; border-radius: 50%;"></div>
               </div>
-              <div style="height: 3px; background: #e5e7eb; margin: 18px 0;"></div>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 30px;">
-                <span style="color: #6b7280; font-weight: 500;">Blood Group:</span>
-                <span style="color: #10b981; font-weight: bold;">${member.bloodGroup || 'N/A'}</span>
+              
+              <!-- Decorative elements around photo -->
+              <div style="position: absolute; top: -12px; left: -12px; width: 36px; height: 36px; background: rgba(255, 255, 255, 0.6); border-radius: 50%;"></div>
+              <div style="position: absolute; bottom: -12px; left: -24px; width: 24px; height: 24px; background: rgba(255, 255, 255, 0.4); border-radius: 50%;"></div>
+              <div style="position: absolute; top: -24px; right: -12px; width: 24px; height: 24px; background: rgba(255, 255, 255, 0.5); border-radius: 50%;"></div>
+            </div>
+          </div>
+
+          <!-- Member Details Card -->
+          <div style="position: relative; z-index: 10; margin: 36px; margin-top: 48px; margin-bottom: 48px;">
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-radius: 36px; box-shadow: 0 24px 72px rgba(0,0,0,0.2); border: 3px solid rgba(255, 255, 255, 0.5);">
+              <!-- Name and Designation -->
+              <div style="padding: 36px; padding-bottom: 24px; text-align: center; border-bottom: 3px solid #f3f4f6;">
+                <div style="font-size: 54px; font-weight: bold; color: #1f2937; line-height: 1.2; margin-bottom: 12px;">
+                  ${member.fullName}
+                </div>
+                <div style="display: inline-block; background: linear-gradient(to right, #d1fae5, #a7f3d0); padding: 12px 36px; border-radius: 999px;">
+                  <div style="color: #047857; font-weight: 600; font-size: 36px; text-transform: uppercase; letter-spacing: 0.15em;">
+                    ${member.designation}
+                  </div>
+                </div>
               </div>
+              
+              <!-- Member ID with decorative styling -->
+              <div style="padding: 36px; padding-top: 24px; padding-bottom: 12px; text-align: center;">
+                <div style="display: inline-block; background: linear-gradient(to right, #1f2937, #111827); color: white; padding: 12px 36px; border-radius: 18px; box-shadow: 0 12px 36px rgba(0,0,0,0.3);">
+                  <div style="font-size: 36px; font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 0.2em;">
+                    ${member.memberId}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Details Grid -->
+              <div style="padding: 36px; padding-top: 24px;">
+                <div style="margin-bottom: 24px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: #f9fafb; border-radius: 18px;">
+                    <span style="font-size: 36px; color: #6b7280; font-weight: 500; display: flex; align-items: center;">
+                      <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; margin-right: 24px;"></div>
+                      Joining Date
+                    </span>
+                    <span style="font-size: 36px; color: #1f2937; font-weight: bold;">
+                      ${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+                
+                <div style="margin-bottom: 24px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: #d1fae5; border-radius: 18px;">
+                    <span style="font-size: 36px; color: #047857; font-weight: 500; display: flex; align-items: center;">
+                      <div style="width: 12px; height: 12px; background: #059669; border-radius: 50%; margin-right: 24px;"></div>
+                      Contact
+                    </span>
+                    <span style="font-size: 36px; color: #065f46; font-weight: bold;">
+                      ${member.contactNumber}
+                    </span>
+                  </div>
+                </div>
+                
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: #fef2f2; border-radius: 18px;">
+                    <span style="font-size: 36px; color: #b91c1c; font-weight: 500; display: flex; align-items: center;">
+                      <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%; margin-right: 24px;"></div>
+                      Blood Group
+                    </span>
+                    <span style="font-size: 36px; color: #991b1b; font-weight: bold;">
+                      ${member.bloodGroup || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Decorative Elements -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 36px;">
+            <div style="background: linear-gradient(to right, #047857, #059669, #0d9488); height: 100%;">
+              <div style="height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);"></div>
             </div>
           </div>
         </div>
