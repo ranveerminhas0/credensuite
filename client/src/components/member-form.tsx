@@ -96,18 +96,27 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
 
   const handlePreview = () => {
     const formData = form.getValues();
-    onPreview(formData, photoFile || undefined);
+    const dataWithId = {
+      ...formData,
+      memberId: memberIdValue
+    };
+    onPreview(dataWithId, photoFile || undefined);
   };
 
   const onSubmit = (data: any) => {
-    createMemberMutation.mutate(data);
+    // Add the generated member ID to the form data
+    const memberData = {
+      ...data,
+      memberId: memberIdValue
+    };
+    createMemberMutation.mutate(memberData);
   };
 
-  const generateMemberId = () => {
+  const [memberIdValue] = useState(() => {
     const year = new Date().getFullYear();
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     return `NGO-${year}-${random}`;
-  };
+  });
 
   return (
     <Form {...form}>
@@ -162,7 +171,7 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
             <FormLabel>Member ID *</FormLabel>
             <FormControl>
               <Input 
-                value={generateMemberId()} 
+                value={memberIdValue} 
                 placeholder="Auto-generated" 
                 readOnly 
                 className="bg-gray-50"

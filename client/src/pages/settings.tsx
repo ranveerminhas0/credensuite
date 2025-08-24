@@ -39,12 +39,12 @@ export default function Settings() {
   React.useEffect(() => {
     if (settings) {
       form.reset({
-        organizationName: settings.organizationName || "",
-        phoneNumber: settings.phoneNumber || "",
-        emailAddress: settings.emailAddress || "",
-        address: settings.address || "",
-        website: settings.website || "",
-        qrCodePattern: settings.qrCodePattern || "",
+        organizationName: (settings as any).organizationName || "",
+        phoneNumber: (settings as any).phoneNumber || "",
+        emailAddress: (settings as any).emailAddress || "",
+        address: (settings as any).address || "",
+        website: (settings as any).website || "",
+        qrCodePattern: (settings as any).qrCodePattern || "",
       });
     }
   }, [settings, form]);
@@ -227,10 +227,10 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {settings?.logoUrl && (
+              {(settings as any)?.logoUrl && (
                 <div className="flex justify-center">
                   <img 
-                    src={settings.logoUrl} 
+                    src={(settings as any).logoUrl} 
                     alt="Current logo"
                     className="w-16 h-16 object-contain rounded"
                   />
@@ -294,10 +294,10 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {settings?.signatureUrl && (
+              {(settings as any)?.signatureUrl && (
                 <div className="flex justify-center">
                   <img 
-                    src={settings.signatureUrl} 
+                    src={(settings as any).signatureUrl} 
                     alt="Current signature"
                     className="max-w-24 h-12 object-contain"
                   />

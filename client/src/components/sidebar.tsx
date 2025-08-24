@@ -37,10 +37,10 @@ export default function Sidebar() {
             
             return (
               <Link key={item.name} href={item.href}>
-                <a
+                <div
                   data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   className={cn(
-                    "flex items-center px-4 py-2 rounded-lg transition-colors",
+                    "flex items-center px-4 py-2 rounded-lg transition-colors cursor-pointer",
                     isActive
                       ? "bg-blue-50 text-primary"
                       : "text-gray-700 hover:bg-gray-100"
@@ -48,7 +48,7 @@ export default function Sidebar() {
                 >
                   <Icon className="mr-3 h-5 w-5" />
                   {item.name}
-                </a>
+                </div>
               </Link>
             );
           })}

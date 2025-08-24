@@ -22,79 +22,141 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
               size: 3.375in 2.125in;
               margin: 0;
             }
+            @media print {
+              .card {
+                width: 3.375in !important;
+                height: 2.125in !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-after: always;
+              }
+            }
             body {
-              font-family: Arial, sans-serif;
+              font-family: 'Arial', sans-serif;
               margin: 0;
               padding: 0;
+              background: white;
             }
             .card {
               width: 3.375in;
               height: 2.125in;
               background: linear-gradient(135deg, #2563eb, #1e40af);
               color: white;
-              padding: 16px;
+              padding: 12px;
               box-sizing: border-box;
               page-break-after: always;
+              border-radius: 8px;
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              border: 2px solid #1e40af;
             }
             .card-header {
               display: flex;
               justify-content: space-between;
-              align-items: center;
-              margin-bottom: 12px;
+              align-items: flex-start;
+              margin-bottom: 8px;
+              height: 40px;
             }
             .logo {
-              width: 32px;
-              height: 32px;
+              width: 35px;
+              height: 35px;
               background: white;
               border-radius: 50%;
               display: flex;
               align-items: center;
               justify-content: center;
+              font-size: 16px;
+              color: #2563eb;
+              font-weight: bold;
+              border: 2px solid white;
             }
             .org-info {
               text-align: right;
-              font-size: 10px;
+              font-size: 9px;
+              line-height: 1.2;
+              max-width: 140px;
             }
-            .member-info {
+            .org-name {
+              font-weight: bold;
+              font-size: 11px;
+              margin-bottom: 2px;
+            }
+            .member-section {
               display: flex;
               align-items: center;
-              margin-bottom: 12px;
+              margin-bottom: 8px;
+              flex: 1;
             }
             .photo {
-              width: 60px;
-              height: 60px;
-              background: #ccc;
-              border-radius: 4px;
-              margin-right: 12px;
+              width: 70px;
+              height: 70px;
+              background: #ffffff;
+              border-radius: 6px;
+              margin-right: 10px;
               object-fit: cover;
+              border: 2px solid white;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+            .member-details {
+              flex: 1;
             }
             .member-details h3 {
-              margin: 0;
-              font-size: 14px;
+              margin: 0 0 4px 0;
+              font-size: 16px;
               font-weight: bold;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
             }
-            .member-details p {
-              margin: 2px 0;
+            .member-details .role {
+              margin: 0 0 2px 0;
+              font-size: 11px;
+              opacity: 0.9;
+              text-transform: capitalize;
+            }
+            .member-details .id {
+              margin: 0;
               font-size: 10px;
               opacity: 0.8;
+              font-weight: bold;
             }
-            .card-info {
+            .card-footer {
+              margin-top: auto;
               font-size: 8px;
+              border-top: 1px solid rgba(255,255,255,0.3);
+              padding-top: 6px;
             }
-            .card-info div {
+            .footer-row {
               display: flex;
               justify-content: space-between;
               margin-bottom: 2px;
             }
+            .footer-label {
+              opacity: 0.8;
+            }
+            .footer-value {
+              font-weight: bold;
+            }
             .card-back {
-              background: #f8f9fa;
+              background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
               color: #333;
-              border: 2px solid #dee2e6;
+              border: 2px solid #2563eb;
+              border-radius: 8px;
+              padding: 12px;
             }
             .back-header {
               text-align: center;
-              margin-bottom: 12px;
-              font-size: 10px;
+              margin-bottom: 10px;
+              font-size: 9px;
+              line-height: 1.3;
+              border-bottom: 1px solid #ccc;
+              padding-bottom: 8px;
+            }
+            .back-org-name {
+              font-weight: bold;
+              font-size: 11px;
+              color: #2563eb;
+              margin-bottom: 3px;
             }
             .emergency-section {
               border-top: 1px solid #ccc;
@@ -102,33 +164,55 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
               margin-bottom: 8px;
               font-size: 8px;
             }
+            .emergency-title {
+              font-weight: bold;
+              margin-bottom: 4px;
+              color: #dc2626;
+            }
             .qr-section {
               display: flex;
               align-items: center;
               margin-bottom: 8px;
+              border-top: 1px solid #ccc;
+              padding-top: 8px;
             }
             .qr-code {
-              width: 40px;
-              height: 40px;
-              background: #e9ecef;
-              border: 1px solid #ccc;
-              margin-right: 8px;
+              width: 45px;
+              height: 45px;
+              background: #ffffff;
+              border: 2px solid #2563eb;
+              margin-right: 10px;
               display: flex;
               align-items: center;
               justify-content: center;
               font-size: 8px;
+              font-weight: bold;
+              border-radius: 4px;
+            }
+            .declaration {
+              font-size: 7px;
+              line-height: 1.4;
+            }
+            .declaration-title {
+              font-weight: bold;
+              margin-bottom: 3px;
             }
             .signature-section {
               border-top: 1px solid #ccc;
               padding-top: 8px;
               display: flex;
               justify-content: space-between;
-              font-size: 8px;
+              font-size: 7px;
             }
             .signature-box {
-              width: 60px;
-              border-bottom: 1px solid #666;
-              height: 20px;
+              width: 70px;
+              border-bottom: 1px solid #333;
+              height: 18px;
+              margin-top: 4px;
+            }
+            .signature-label {
+              font-weight: bold;
+              margin-bottom: 2px;
             }
           </style>
         </head>
@@ -136,66 +220,70 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
           <!-- Front Side -->
           <div class="card">
             <div class="card-header">
-              <div class="logo">♥</div>
+              <div class="logo">NGO</div>
               <div class="org-info">
-                <div style="font-weight: bold;">Hope Foundation NGO</div>
-                <div>VOLUNTEER ID</div>
+                <div class="org-name">Hope Foundation NGO</div>
+                <div>MEMBER IDENTIFICATION CARD</div>
+                <div>Est. 2020</div>
               </div>
             </div>
             
-            <div class="member-info">
+            <div class="member-section">
               ${photoUrl ? `<img src="${photoUrl}" alt="Photo" class="photo">` : '<div class="photo"></div>'}
               <div class="member-details">
                 <h3>${member.fullName}</h3>
-                <p style="text-transform: capitalize;">${member.designation}</p>
-                <p>${member.memberId}</p>
+                <p class="role">${member.designation}</p>
+                <p class="id">ID: ${member.memberId}</p>
               </div>
             </div>
             
-            <div class="card-info">
-              <div>
-                <span>Joining Date:</span>
-                <span>${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+            <div class="card-footer">
+              <div class="footer-row">
+                <span class="footer-label">Joined:</span>
+                <span class="footer-value">${new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
               </div>
-              <div>
-                <span>Contact:</span>
-                <span>${member.contactNumber}</span>
+              <div class="footer-row">
+                <span class="footer-label">Contact:</span>
+                <span class="footer-value">${member.contactNumber}</span>
               </div>
-              ${member.bloodGroup ? `<div><span>Blood Group:</span><span>${member.bloodGroup}</span></div>` : ''}
+              ${member.bloodGroup ? `<div class="footer-row"><span class="footer-label">Blood:</span><span class="footer-value">${member.bloodGroup}</span></div>` : ''}
             </div>
           </div>
 
           <!-- Back Side -->
           <div class="card card-back">
             <div class="back-header">
-              <div style="font-weight: bold;">Hope Foundation NGO</div>
+              <div class="back-org-name">Hope Foundation NGO</div>
               <div>123 Main Street, City, State 12345</div>
               <div>Phone: (555) 123-4567 | Email: info@hopefoundation.org</div>
+              <div>Website: www.hopefoundation.org</div>
             </div>
             
             ${member.emergencyContactName || member.emergencyContactNumber ? `
               <div class="emergency-section">
-                <div style="font-weight: bold; margin-bottom: 4px;">Emergency Contact:</div>
-                ${member.emergencyContactName ? `<div>${member.emergencyContactName}</div>` : ''}
-                ${member.emergencyContactNumber ? `<div>${member.emergencyContactNumber}</div>` : ''}
+                <div class="emergency-title">Emergency Contact:</div>
+                ${member.emergencyContactName ? `<div><strong>Name:</strong> ${member.emergencyContactName}</div>` : ''}
+                ${member.emergencyContactNumber ? `<div><strong>Phone:</strong> ${member.emergencyContactNumber}</div>` : ''}
               </div>
             ` : ''}
             
             <div class="qr-section">
-              <div class="qr-code">QR</div>
-              <div style="font-size: 8px;">
-                <div style="font-weight: bold; margin-bottom: 4px;">This card is property of Hope Foundation NGO.</div>
-                <div>If found, please return to the above address.</div>
+              <div class="qr-code">QR<br>CODE</div>
+              <div class="declaration">
+                <div class="declaration-title">IMPORTANT NOTICE:</div>
+                <div>This card is the exclusive property of Hope Foundation NGO.</div>
+                <div>If found, please return to the address above or contact us immediately.</div>
+                <div>Valid only with photo identification.</div>
               </div>
             </div>
             
             <div class="signature-section">
               <div>
-                <div>Authorized Signatory</div>
+                <div class="signature-label">Authorized Officer</div>
                 <div class="signature-box"></div>
               </div>
               <div>
-                <div>Member Signature</div>
+                <div class="signature-label">Member Signature</div>
                 <div class="signature-box"></div>
               </div>
             </div>
