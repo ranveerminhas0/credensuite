@@ -343,7 +343,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
 
       {/* Card Back Side */}
       {showBack && (
-        <div className="relative bg-white rounded-lg shadow-2xl mx-auto overflow-hidden border border-gray-100" style={{width: '205px', height: '330px'}} data-testid="card-back">
+        <div className="relative bg-white rounded-xl shadow-2xl mx-auto overflow-hidden border border-gray-100" style={{width: '205px', height: '330px'}} data-testid="card-back">
           {/* Header Section */}
           <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-2 border-b border-emerald-100">
             <div className="text-center">
