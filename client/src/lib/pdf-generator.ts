@@ -328,13 +328,19 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
     const pdfBlob = pdf.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
     
-    // Open in new tab
-    const newTab = window.open(pdfUrl, '_blank');
+    console.log('Attempting to open PDF in new tab...');
+    
+    // Try to open in new tab
+    const newTab = window.open('', '_blank');
     if (newTab) {
-      newTab.onload = () => {
+      console.log('New tab opened successfully');
+      newTab.location.href = pdfUrl;
+      // Clean up URL after a delay to ensure PDF loads
+      setTimeout(() => {
         URL.revokeObjectURL(pdfUrl);
-      };
+      }, 1000);
     } else {
+      console.log('Popup blocked, falling back to download');
       // Fallback: if popup blocked, download the file
       pdf.save(fileName);
       URL.revokeObjectURL(pdfUrl);
