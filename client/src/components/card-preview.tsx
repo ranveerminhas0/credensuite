@@ -133,18 +133,18 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
       {!showBack && (
         <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-front">
           {/* Header */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2 border-b border-emerald-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-2 py-1.5 border-b border-emerald-200">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg border border-white">
+              <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg border border-white">
                 {settings && settings.logoUrl ? (
                   <img 
                     src={settings?.logoUrl || ''} 
                     alt="NGO Logo"
-                    className="w-5 h-5 object-contain"
+                    className="w-4 h-4 object-contain"
                   />
                 ) : (
-                  <Heart className="h-4 w-4 text-white" />
+                  <Heart className="h-3 w-3 text-white" />
                 )}
               </div>
               
@@ -153,7 +153,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 <h4 className="text-xs font-bold text-slate-800 leading-tight">
                   {settings?.organizationName || "Your NGO Name"}
                 </h4>
-                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-medium mt-1">
+                <div className="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mt-0.5">
                   ID CARD
                 </div>
               </div>
@@ -161,10 +161,10 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
 
           {/* Main Content Area - Horizontal Layout */}
-          <div className="flex items-center p-3 gap-3 h-[160px]">
+          <div className="flex items-stretch p-2 gap-2 h-[172px]">
             {/* Member Photo */}
             <div className="flex-shrink-0">
-              <div className="w-16 h-20 rounded-xl bg-slate-100 overflow-hidden border-2 border-white shadow-lg">
+              <div className="w-14 h-18 rounded-lg bg-slate-100 overflow-hidden border border-white shadow-md">
                 {photoUrl ? (
                   <img 
                     src={photoUrl} 
@@ -173,36 +173,36 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                   />
                 ) : (
                   <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                    <User className="h-6 w-6 text-slate-400" />
+                    <User className="h-5 w-5 text-slate-400" />
                   </div>
                 )}
               </div>
             </div>
 
             {/* Member Information */}
-            <div className="flex-1 h-full flex flex-col justify-between">
+            <div className="flex-1 h-full flex flex-col justify-between py-1">
               {/* Name and Designation */}
-              <div className="text-center mb-2">
-                <h3 className="font-bold text-sm text-slate-900 mb-1 leading-tight">
+              <div className="text-center">
+                <h3 className="font-bold text-xs text-slate-900 mb-1 leading-tight">
                   {member.fullName || "Member Name"}
                 </h3>
-                <span className="inline-block bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide">
+                <span className="inline-block bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide">
                   {member.designation || "Designation"}
                 </span>
               </div>
               
               {/* Member ID */}
-              <div className="text-center mb-2">
-                <div className="inline-block bg-slate-800 text-white px-2 py-1 rounded text-xs font-mono font-bold tracking-wider">
+              <div className="text-center my-1">
+                <div className="inline-block bg-slate-800 text-white px-2 py-0.5 rounded text-xs font-mono font-bold tracking-wider">
                   {member.memberId || "NGO-YYYY-001"}
                 </div>
               </div>
               
-              {/* Details Grid */}
+              {/* Details Grid - All Fields Required */}
               <div className="grid grid-cols-2 gap-1 text-xs">
-                <div className="bg-slate-50 rounded px-2 py-1">
-                  <div className="text-slate-600 font-medium">Joined</div>
-                  <div className="text-slate-900 font-semibold">
+                <div className="bg-slate-50 rounded px-1.5 py-1">
+                  <div className="text-slate-600 font-medium text-xs">Joined</div>
+                  <div className="text-slate-900 font-semibold text-xs">
                     {member.joiningDate 
                       ? new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
                       : "Jan 2024"
@@ -210,21 +210,33 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                   </div>
                 </div>
                 
-                <div className="bg-emerald-50 rounded px-2 py-1">
-                  <div className="text-emerald-700 font-medium">Contact</div>
+                <div className="bg-emerald-50 rounded px-1.5 py-1">
+                  <div className="text-emerald-700 font-medium text-xs">Contact</div>
                   <div className="text-emerald-900 font-semibold text-xs">
                     {member.contactNumber || "+1 555-0123"}
                   </div>
                 </div>
                 
-                {member.bloodGroup && (
-                  <div className="bg-red-50 rounded px-2 py-1 col-span-2">
-                    <div className="text-red-700 font-medium">Blood Type</div>
-                    <div className="text-red-900 font-semibold">
-                      {member.bloodGroup}
-                    </div>
+                <div className="bg-red-50 rounded px-1.5 py-1">
+                  <div className="text-red-700 font-medium text-xs">Blood</div>
+                  <div className="text-red-900 font-semibold text-xs">
+                    {member.bloodGroup || "O+"}
                   </div>
-                )}
+                </div>
+                
+                <div className="bg-blue-50 rounded px-1.5 py-1">
+                  <div className="text-blue-700 font-medium text-xs">Status</div>
+                  <div className="text-blue-900 font-semibold text-xs">
+                    Active
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 rounded px-1.5 py-1 col-span-2">
+                  <div className="text-yellow-700 font-medium text-xs">Address</div>
+                  <div className="text-yellow-900 font-semibold text-xs truncate">
+                    {member.address || "123 Main Street, City"}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -238,16 +250,16 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
       {showBack && (
         <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-back">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2 border-b border-emerald-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-2 py-1.5 border-b border-emerald-200">
             <div className="text-center">
-              <h4 className="text-sm font-bold text-slate-900 mb-1">
+              <h4 className="text-xs font-bold text-slate-900 mb-1">
                 {settings?.organizationName || "Your NGO Name"}
               </h4>
               <div className="text-xs text-slate-600">
-                <p className="leading-tight">
+                <p className="leading-tight text-xs">
                   {settings?.address || "123 Main Street, City, State 12345"}
                 </p>
-                <p className="mt-1">
+                <p className="mt-0.5 text-xs">
                   {settings?.phoneNumber || "(555) 123-4567"} • {settings?.emailAddress || "info@yourorg.org"}
                 </p>
               </div>
@@ -255,55 +267,80 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
           
           {/* Main Content Area */}
-          <div className="p-3 h-[144px] flex flex-col gap-2">
-            {/* Emergency Contact Section */}
-            {(member.emergencyContactName || member.emergencyContactNumber) && (
-              <div className="bg-red-50 rounded-lg p-2 border border-red-100 flex-shrink-0">
-                <h5 className="text-xs font-bold text-red-800 mb-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                  Emergency Contact
-                </h5>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {member.emergencyContactName && (
-                    <div>
-                      <span className="text-red-700 font-medium block">Name:</span>
-                      <span className="text-red-900 font-semibold text-xs">
-                        {member.emergencyContactName}
-                      </span>
-                    </div>
-                  )}
-                  {member.emergencyContactNumber && (
-                    <div>
-                      <span className="text-red-700 font-medium block">Phone:</span>
-                      <span className="text-red-900 font-semibold text-xs">
-                        {member.emergencyContactNumber}
-                      </span>
-                    </div>
-                  )}
+          <div className="p-2 h-[162px] flex flex-col gap-1.5">
+            {/* Emergency Contact Section - Always Show */}
+            <div className="bg-red-50 rounded-lg p-1.5 border border-red-100 flex-shrink-0">
+              <h5 className="text-xs font-bold text-red-800 mb-1 flex items-center gap-1">
+                <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+                Emergency Contact
+              </h5>
+              <div className="grid grid-cols-2 gap-1.5 text-xs">
+                <div>
+                  <span className="text-red-700 font-medium block text-xs">Name:</span>
+                  <span className="text-red-900 font-semibold text-xs">
+                    {member.emergencyContactName || "Emergency Contact"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-red-700 font-medium block text-xs">Phone:</span>
+                  <span className="text-red-900 font-semibold text-xs">
+                    {member.emergencyContactNumber || "+1 555-9999"}
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
+            
+            {/* Additional Member Details */}
+            <div className="grid grid-cols-2 gap-1.5 text-xs flex-shrink-0">
+              <div className="bg-blue-50 rounded px-1.5 py-1">
+                <div className="text-blue-700 font-medium text-xs">Email</div>
+                <div className="text-blue-900 font-semibold text-xs truncate">
+                  {member.emailAddress || "member@email.com"}
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 rounded px-1.5 py-1">
+                <div className="text-purple-700 font-medium text-xs">Department</div>
+                <div className="text-purple-900 font-semibold text-xs">
+                  {member.department || "General"}
+                </div>
+              </div>
+              
+              <div className="bg-green-50 rounded px-1.5 py-1">
+                <div className="text-green-700 font-medium text-xs">ID Type</div>
+                <div className="text-green-900 font-semibold text-xs">
+                  Member ID
+                </div>
+              </div>
+              
+              <div className="bg-orange-50 rounded px-1.5 py-1">
+                <div className="text-orange-700 font-medium text-xs">Valid</div>
+                <div className="text-orange-900 font-semibold text-xs">
+                  {new Date().getFullYear() + 1}
+                </div>
+              </div>
+            </div>
             
             {/* QR Code and Instructions */}
-            <div className="flex items-center gap-3 flex-1">
-              <div className="w-10 h-10 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                <QrCode className="h-5 w-5 text-emerald-600" />
+            <div className="flex items-center gap-2 flex-1">
+              <div className="w-8 h-8 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                <QrCode className="h-4 w-4 text-emerald-600" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-slate-800 font-semibold mb-1">
+                <p className="text-xs text-slate-800 font-semibold mb-0.5">
                   Property of {settings?.organizationName || "Your NGO"}
                 </p>
                 <p className="text-xs text-slate-600 leading-tight">
-                  If found, please return to the above address.
+                  If found, please return to above address.
                 </p>
               </div>
             </div>
             
             {/* Signatures Section */}
-            <div className="grid grid-cols-2 gap-3 flex-shrink-0">
+            <div className="grid grid-cols-2 gap-2 flex-shrink-0">
               <div>
-                <p className="text-xs text-slate-600 mb-1 font-medium">Authorized By</p>
-                <div className="w-full h-6 border-b border-dotted border-slate-300 flex items-end">
+                <p className="text-xs text-slate-600 mb-0.5 font-medium">Authorized By</p>
+                <div className="w-full h-4 border-b border-dotted border-slate-300 flex items-end">
                   {settings && settings.signatureUrl && (
                     <img 
                       src={settings?.signatureUrl || ''} 
@@ -314,14 +351,14 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 </div>
               </div>
               <div>
-                <p className="text-xs text-slate-600 mb-1 font-medium">Member Sign</p>
-                <div className="w-full h-6 border-b border-dotted border-slate-300"></div>
+                <p className="text-xs text-slate-600 mb-0.5 font-medium">Member Sign</p>
+                <div className="w-full h-4 border-b border-dotted border-slate-300"></div>
               </div>
             </div>
           </div>
           
           {/* Footer */}
-          <div className="absolute bottom-2 left-0 right-0 text-center">
+          <div className="absolute bottom-1.5 left-0 right-0 text-center">
             <p className="text-xs text-slate-500 italic">
               Valid with authorized signature only
             </p>
