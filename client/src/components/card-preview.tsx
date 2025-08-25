@@ -20,13 +20,13 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
   if (!member) {
     return (
       <div className="text-center py-12">
-        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200 opacity-50" style={{width: '205px', minHeight: '330px'}}>
-          {/* Clean Header with Subtle Blue Accent */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-4 border-b border-slate-200">
+        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200 opacity-50" style={{width: '324px', height: '204px'}}>
+          {/* Clean Header with Subtle Green Accent */}
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-2 border-b border-emerald-200">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Heart className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg border-2 border-white">
+                <Heart className="h-5 w-5 text-white" />
               </div>
               
               {/* Organization Info */}
@@ -34,7 +34,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 <h4 className="text-xs font-bold text-slate-800 leading-tight mb-1">
                   Your NGO Name
                 </h4>
-                <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium">
+                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-medium">
                   ID CARD
                 </div>
               </div>
@@ -49,8 +49,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                   <User className="h-8 w-8 text-slate-400" />
                 </div>
               </div>
-              {/* Active Status Indicator */}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+
             </div>
           </div>
 
@@ -84,9 +83,9 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 </span>
               </div>
               
-              <div className="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
-                <span className="text-xs text-blue-700 font-medium">Contact</span>
-                <span className="text-xs text-blue-900 font-semibold">
+              <div className="flex justify-between items-center py-2 px-3 bg-emerald-50 rounded-lg">
+                <span className="text-xs text-emerald-700 font-medium">Contact</span>
+                <span className="text-xs text-emerald-900 font-semibold">
                   +1 555-0123
                 </span>
               </div>
@@ -101,7 +100,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
 
           {/* Bottom Accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
         </div>
         <p className="text-sm text-gray-500 mt-4">Fill the form to see preview</p>
       </div>
@@ -132,9 +131,9 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
 
       {/* Card Front Side */}
       {!showBack && (
-        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '205px', minHeight: '330px'}} data-testid="card-front">
+        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-front">
           {/* Clean Header with Subtle Blue Accent */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-4 border-b border-slate-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-4 border-b border-emerald-200">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -154,7 +153,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 <h4 className="text-xs font-bold text-slate-800 leading-tight mb-1">
                   {settings?.organizationName || "Your NGO Name"}
                 </h4>
-                <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium">
+                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-medium">
                   ID CARD
                 </div>
               </div>
@@ -177,8 +176,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                   </div>
                 )}
               </div>
-              {/* Active Status Indicator */}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+
             </div>
           </div>
 
@@ -215,9 +213,9 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 </span>
               </div>
               
-              <div className="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
-                <span className="text-xs text-blue-700 font-medium">Contact</span>
-                <span className="text-xs text-blue-900 font-semibold">
+              <div className="flex justify-between items-center py-2 px-3 bg-emerald-50 rounded-lg">
+                <span className="text-xs text-emerald-700 font-medium">Contact</span>
+                <span className="text-xs text-emerald-900 font-semibold">
                   {member.contactNumber || "+1 555-0123"}
                 </span>
               </div>
@@ -234,15 +232,15 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
 
           {/* Bottom Accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
         </div>
       )}
 
       {/* Card Back Side */}
       {showBack && (
-        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '205px', minHeight: '330px'}} data-testid="card-back">
+        <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-back">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-3 border-b border-slate-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-3 border-b border-emerald-200">
             <div className="text-center">
               <h4 className="text-sm font-bold text-slate-900 mb-2">
                 {settings?.organizationName || "Your NGO Name"}
@@ -291,7 +289,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           {/* QR Code and Instructions */}
           <div className="p-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-emerald-50 border border-blue-200 rounded-lg flex items-center justify-center">
                 <QrCode className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex-1">
@@ -333,7 +331,7 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
           </div>
           
           {/* Bottom Accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
         </div>
       )}
     </div>
