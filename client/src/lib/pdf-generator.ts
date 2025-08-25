@@ -323,14 +323,27 @@ export async function generatePDF(member: Member, photoFile?: File | null) {
       URL.revokeObjectURL(photoUrl);
     }
     
-    // Download the PDF
+    // Open PDF in new tab
     const fileName = `ID-Card-${member.fullName.replace(/\s+/g, '-')}-${member.memberId}.pdf`;
-    pdf.save(fileName);
+    const pdfBlob = pdf.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // Open in new tab
+    const newTab = window.open(pdfUrl, '_blank');
+    if (newTab) {
+      newTab.onload = () => {
+        URL.revokeObjectURL(pdfUrl);
+      };
+    } else {
+      // Fallback: if popup blocked, download the file
+      pdf.save(fileName);
+      URL.revokeObjectURL(pdfUrl);
+    }
     
     console.log('PDF generated successfully');
     
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF: ' + error.message);
+    throw new Error('Failed to generate PDF: ' + (error instanceof Error ? error.message : String(error)));
   }
 }

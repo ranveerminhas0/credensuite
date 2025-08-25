@@ -72,7 +72,7 @@ export default function Members() {
       await generatePDF(member);
       toast({
         title: "Success",
-        description: "ID card PDF generated successfully",
+        description: "ID card PDF opened in new tab",
       });
     } catch (error) {
       toast({

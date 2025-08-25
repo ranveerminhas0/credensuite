@@ -83,7 +83,7 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
         await generatePDF(member, photoFile);
         toast({
           title: "PDF Generated",
-          description: "ID card PDF downloaded successfully",
+          description: "ID card PDF opened in new tab",
         });
       } catch (pdfError) {
         console.error('PDF generation error:', pdfError);
