@@ -132,38 +132,39 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
       {/* Card Front Side */}
       {!showBack && (
         <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-front">
-          {/* Clean Header with Subtle Blue Accent */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-4 border-b border-emerald-200">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2 border-b border-emerald-200">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg border border-white">
                 {settings && settings.logoUrl ? (
                   <img 
                     src={settings?.logoUrl || ''} 
                     alt="NGO Logo"
-                    className="w-6 h-6 object-contain"
+                    className="w-5 h-5 object-contain"
                   />
                 ) : (
-                  <Heart className="h-5 w-5 text-blue-600" />
+                  <Heart className="h-4 w-4 text-white" />
                 )}
               </div>
               
               {/* Organization Info */}
-              <div className="text-right max-w-[110px]">
-                <h4 className="text-xs font-bold text-slate-800 leading-tight mb-1">
+              <div className="text-right">
+                <h4 className="text-xs font-bold text-slate-800 leading-tight">
                   {settings?.organizationName || "Your NGO Name"}
                 </h4>
-                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-medium">
+                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-medium mt-1">
                   ID CARD
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Member Photo Section */}
-          <div className="flex justify-center pt-6 pb-4">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden border-2 border-white shadow-lg">
+          {/* Main Content Area - Horizontal Layout */}
+          <div className="flex items-center p-3 gap-3 h-[160px]">
+            {/* Member Photo */}
+            <div className="flex-shrink-0">
+              <div className="w-16 h-20 rounded-xl bg-slate-100 overflow-hidden border-2 border-white shadow-lg">
                 {photoUrl ? (
                   <img 
                     src={photoUrl} 
@@ -172,62 +173,59 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                   />
                 ) : (
                   <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                    <User className="h-8 w-8 text-slate-400" />
+                    <User className="h-6 w-6 text-slate-400" />
                   </div>
                 )}
               </div>
-
             </div>
-          </div>
 
-          {/* Member Information */}
-          <div className="px-4 pb-4">
-            {/* Name and Designation */}
-            <div className="text-center mb-4">
-              <h3 className="font-bold text-lg text-slate-900 mb-1">
-                {member.fullName || "Member Name"}
-              </h3>
-              <span className="inline-block bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide">
-                {member.designation || "Designation"}
-              </span>
-            </div>
-            
-            {/* Member ID */}
-            <div className="text-center mb-4">
-              <div className="inline-block bg-slate-800 text-white px-3 py-1.5 rounded-lg">
-                <p className="text-xs font-mono font-bold tracking-wider">
+            {/* Member Information */}
+            <div className="flex-1 h-full flex flex-col justify-between">
+              {/* Name and Designation */}
+              <div className="text-center mb-2">
+                <h3 className="font-bold text-sm text-slate-900 mb-1 leading-tight">
+                  {member.fullName || "Member Name"}
+                </h3>
+                <span className="inline-block bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide">
+                  {member.designation || "Designation"}
+                </span>
+              </div>
+              
+              {/* Member ID */}
+              <div className="text-center mb-2">
+                <div className="inline-block bg-slate-800 text-white px-2 py-1 rounded text-xs font-mono font-bold tracking-wider">
                   {member.memberId || "NGO-YYYY-001"}
-                </p>
-              </div>
-            </div>
-            
-            {/* Details */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg">
-                <span className="text-xs text-slate-600 font-medium">Joined</span>
-                <span className="text-xs text-slate-900 font-semibold">
-                  {member.joiningDate 
-                    ? new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                    : "Jan 2024"
-                  }
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center py-2 px-3 bg-emerald-50 rounded-lg">
-                <span className="text-xs text-emerald-700 font-medium">Contact</span>
-                <span className="text-xs text-emerald-900 font-semibold">
-                  {member.contactNumber || "+1 555-0123"}
-                </span>
-              </div>
-              
-              {member.bloodGroup && (
-                <div className="flex justify-between items-center py-2 px-3 bg-red-50 rounded-lg">
-                  <span className="text-xs text-red-700 font-medium">Blood Type</span>
-                  <span className="text-xs text-red-900 font-semibold">
-                    {member.bloodGroup}
-                  </span>
                 </div>
-              )}
+              </div>
+              
+              {/* Details Grid */}
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <div className="bg-slate-50 rounded px-2 py-1">
+                  <div className="text-slate-600 font-medium">Joined</div>
+                  <div className="text-slate-900 font-semibold">
+                    {member.joiningDate 
+                      ? new Date(member.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                      : "Jan 2024"
+                    }
+                  </div>
+                </div>
+                
+                <div className="bg-emerald-50 rounded px-2 py-1">
+                  <div className="text-emerald-700 font-medium">Contact</div>
+                  <div className="text-emerald-900 font-semibold text-xs">
+                    {member.contactNumber || "+1 555-0123"}
+                  </div>
+                </div>
+                
+                {member.bloodGroup && (
+                  <div className="bg-red-50 rounded px-2 py-1 col-span-2">
+                    <div className="text-red-700 font-medium">Blood Type</div>
+                    <div className="text-red-900 font-semibold">
+                      {member.bloodGroup}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -240,57 +238,56 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
       {showBack && (
         <div className="relative bg-white rounded-2xl shadow-xl mx-auto overflow-hidden border border-gray-200" style={{width: '324px', height: '204px'}} data-testid="card-back">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-3 border-b border-emerald-200">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2 border-b border-emerald-200">
             <div className="text-center">
-              <h4 className="text-sm font-bold text-slate-900 mb-2">
+              <h4 className="text-sm font-bold text-slate-900 mb-1">
                 {settings?.organizationName || "Your NGO Name"}
               </h4>
-              <div className="space-y-1">
-                <p className="text-xs text-slate-600 leading-relaxed">
+              <div className="text-xs text-slate-600">
+                <p className="leading-tight">
                   {settings?.address || "123 Main Street, City, State 12345"}
                 </p>
-                <p className="text-xs text-slate-600">
+                <p className="mt-1">
                   {settings?.phoneNumber || "(555) 123-4567"} • {settings?.emailAddress || "info@yourorg.org"}
                 </p>
               </div>
             </div>
           </div>
           
-          {/* Emergency Contact Section */}
-          {(member.emergencyContactName || member.emergencyContactNumber) && (
-            <div className="p-3 border-b border-slate-100">
-              <div className="bg-red-50 rounded-lg p-3 border border-red-100">
-                <h5 className="text-xs font-bold text-red-800 mb-2 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+          {/* Main Content Area */}
+          <div className="p-3 h-[144px] flex flex-col gap-2">
+            {/* Emergency Contact Section */}
+            {(member.emergencyContactName || member.emergencyContactNumber) && (
+              <div className="bg-red-50 rounded-lg p-2 border border-red-100 flex-shrink-0">
+                <h5 className="text-xs font-bold text-red-800 mb-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                   Emergency Contact
                 </h5>
-                <div className="space-y-1">
+                <div className="grid grid-cols-2 gap-2 text-xs">
                   {member.emergencyContactName && (
-                    <div className="flex justify-between text-xs">
-                      <span className="text-red-700 font-medium">Name:</span>
-                      <span className="text-red-900 font-semibold text-right flex-1 ml-2">
+                    <div>
+                      <span className="text-red-700 font-medium block">Name:</span>
+                      <span className="text-red-900 font-semibold text-xs">
                         {member.emergencyContactName}
                       </span>
                     </div>
                   )}
                   {member.emergencyContactNumber && (
-                    <div className="flex justify-between text-xs">
-                      <span className="text-red-700 font-medium">Phone:</span>
-                      <span className="text-red-900 font-semibold">
+                    <div>
+                      <span className="text-red-700 font-medium block">Phone:</span>
+                      <span className="text-red-900 font-semibold text-xs">
                         {member.emergencyContactNumber}
                       </span>
                     </div>
                   )}
                 </div>
               </div>
-            </div>
-          )}
-          
-          {/* QR Code and Instructions */}
-          <div className="p-3 border-b border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-emerald-50 border border-blue-200 rounded-lg flex items-center justify-center">
-                <QrCode className="h-6 w-6 text-blue-600" />
+            )}
+            
+            {/* QR Code and Instructions */}
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-10 h-10 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                <QrCode className="h-5 w-5 text-emerald-600" />
               </div>
               <div className="flex-1">
                 <p className="text-xs text-slate-800 font-semibold mb-1">
@@ -301,14 +298,12 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 </p>
               </div>
             </div>
-          </div>
-          
-          {/* Signatures Section */}
-          <div className="p-3">
-            <div className="grid grid-cols-2 gap-3">
+            
+            {/* Signatures Section */}
+            <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               <div>
-                <p className="text-xs text-slate-600 mb-2 font-medium">Authorized By</p>
-                <div className="w-full h-8 border-b border-dotted border-slate-300 flex items-end">
+                <p className="text-xs text-slate-600 mb-1 font-medium">Authorized By</p>
+                <div className="w-full h-6 border-b border-dotted border-slate-300 flex items-end">
                   {settings && settings.signatureUrl && (
                     <img 
                       src={settings?.signatureUrl || ''} 
@@ -319,15 +314,17 @@ export default function CardPreview({ member, photoFile }: CardPreviewProps) {
                 </div>
               </div>
               <div>
-                <p className="text-xs text-slate-600 mb-2 font-medium">Member Sign</p>
-                <div className="w-full h-8 border-b border-dotted border-slate-300"></div>
+                <p className="text-xs text-slate-600 mb-1 font-medium">Member Sign</p>
+                <div className="w-full h-6 border-b border-dotted border-slate-300"></div>
               </div>
             </div>
-            <div className="mt-3 text-center">
-              <p className="text-xs text-slate-500 italic">
-                Valid with authorized signature only
-              </p>
-            </div>
+          </div>
+          
+          {/* Footer */}
+          <div className="absolute bottom-2 left-0 right-0 text-center">
+            <p className="text-xs text-slate-500 italic">
+              Valid with authorized signature only
+            </p>
           </div>
           
           {/* Bottom Accent */}
