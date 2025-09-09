@@ -26,9 +26,44 @@ export async function setupVite(app: Express, server: Server) {
     allowedHosts: true as const,
   };
 
+  // Ensure process.env has VITE_ public values by parsing .env files
+  const rootDir = path.resolve(import.meta.dirname, "..");
+  const clientDir = path.resolve(rootDir, "client");
+  const possibleEnvFiles = [
+    path.resolve(rootDir, ".env"),
+    path.resolve(clientDir, ".env"),
+  ];
+  const manualEnv: Record<string, string> = {};
+  for (const envPath of possibleEnvFiles) {
+    try {
+      if (fs.existsSync(envPath)) {
+        const content = await fs.promises.readFile(envPath, "utf-8");
+        for (const line of content.split(/\r?\n/)) {
+          if (!line || line.trim().startsWith("#")) continue;
+          const idx = line.indexOf("=");
+          if (idx === -1) continue;
+          const key = line.slice(0, idx).trim().replace(/^\uFEFF/, "");
+          const value = line.slice(idx + 1).trim();
+          if (key.startsWith("VITE_")) {
+            manualEnv[key] = value;
+            if (process.env[key] === undefined) {
+              process.env[key] = value;
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  const userConfig =
+    typeof (viteConfig as any) === "function"
+      ? await (viteConfig as any)({ mode: process.env.NODE_ENV || "development", command: "serve" })
+      : (viteConfig as any);
+
   const vite = await createViteServer({
-    ...viteConfig,
+    ...userConfig,
     configFile: false,
+    envDir: path.resolve(import.meta.dirname, ".."),
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
@@ -54,6 +89,20 @@ export async function setupVite(app: Express, server: Server) {
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      // Inject runtime public config for client (safe VITE_ values only)
+      const pick = (k: string) => process.env[k] ?? manualEnv[k] ?? "";
+      const publicConfig = JSON.stringify({
+        VITE_FIREBASE_API_KEY: pick("VITE_FIREBASE_API_KEY"),
+        VITE_FIREBASE_AUTH_DOMAIN: pick("VITE_FIREBASE_AUTH_DOMAIN"),
+        VITE_FIREBASE_PROJECT_ID: pick("VITE_FIREBASE_PROJECT_ID"),
+        VITE_FIREBASE_STORAGE_BUCKET: pick("VITE_FIREBASE_STORAGE_BUCKET"),
+        VITE_FIREBASE_SENDER_ID: pick("VITE_FIREBASE_SENDER_ID"),
+        VITE_FIREBASE_APP_ID: pick("VITE_FIREBASE_APP_ID"),
+      });
+      template = template.replace(
+        "__PUBLIC_CONFIG__",
+        publicConfig,
+      );
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,

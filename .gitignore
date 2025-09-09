@@ -4,3 +4,13 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+server/firebase-service-account.json
+# Environment
+.env
+client/.env
+# Production builds
+build
+*.log
+# IDE
+.vscode
+.idea

@@ -22,13 +22,12 @@ export const members = pgTable("members", {
 export const ngoSettings = pgTable("ngo_settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationName: text("organization_name").notNull(),
-  phoneNumber: varchar("phone_number"),
+  phoneNumber: varchar("phone_number").notNull(),
   emailAddress: varchar("email_address"),
   address: text("address"),
   website: varchar("website"),
   logoUrl: text("logo_url"),
   signatureUrl: text("signature_url"),
-  qrCodePattern: text("qr_code_pattern"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -46,15 +45,21 @@ export const cardTemplates = pgTable("card_templates", {
 
 export const insertMemberSchema = createInsertSchema(members).omit({
   id: true,
+  memberId: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertNgoSettingsSchema = createInsertSchema(ngoSettings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertNgoSettingsSchema = createInsertSchema(ngoSettings)
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  })
+  .extend({
+    organizationName: z.string().min(1, { message: "Organization name is required" }),
+    phoneNumber: z.string().min(1, { message: "Phone number is required" }),
+  });
 
 export const insertCardTemplateSchema = createInsertSchema(cardTemplates).omit({
   id: true,

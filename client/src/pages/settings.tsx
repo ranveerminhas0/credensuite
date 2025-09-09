@@ -10,7 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { insertNgoSettingsSchema } from "@shared/schema";
-import { Heart, Upload, QrCode, FileSignature } from "lucide-react";
+import { createApiUrl } from "@/lib/api";
+import { Heart, Upload, FileSignature } from "lucide-react";
 import FileUpload from "@/components/ui/file-upload";
 
 export default function Settings() {
@@ -31,9 +32,10 @@ export default function Settings() {
       emailAddress: "",
       address: "",
       website: "",
-      qrCodePattern: "",
     },
   });
+
+  const { errors } = form.formState;
 
   // Update form when settings are loaded
   React.useEffect(() => {
@@ -44,7 +46,6 @@ export default function Settings() {
         emailAddress: (settings as any).emailAddress || "",
         address: (settings as any).address || "",
         website: (settings as any).website || "",
-        qrCodePattern: (settings as any).qrCodePattern || "",
       });
     }
   }, [settings, form]);
@@ -68,9 +69,13 @@ export default function Settings() {
         formData.append('signature', signatureFile);
       }
 
-      const response = await fetch('/api/settings', {
+      const token = await (await import("@/lib/auth")).auth.currentUser?.getIdToken();
+      const response = await fetch(createApiUrl('/api/settings'), {
         method: 'PATCH',
         body: formData,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
@@ -122,11 +127,11 @@ export default function Settings() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* NGO Information */}
+      {/* Organization Data */}
       <div className="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>NGO Information</CardTitle>
+            <CardTitle>Organization Data</CardTitle>
             <p className="text-sm text-gray-600">Update your organization details</p>
           </CardHeader>
           <CardContent>
@@ -137,9 +142,16 @@ export default function Settings() {
                   name="organizationName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Organization Name</FormLabel>
+                      <FormLabel className={`text-gray-900 dark:text-gray-100 ${errors.organizationName ? "text-red-500" : ""}`}>
+                        Organization Name <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input {...field} data-testid="input-organization-name" />
+                        <Input 
+                          {...field} 
+                          data-testid="input-organization-name" 
+                          aria-invalid={!!errors.organizationName}
+                          className={errors.organizationName ? "border-red-500 focus:border-red-500 focus:ring-red-500 ring-red-500" : undefined}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -152,9 +164,16 @@ export default function Settings() {
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel className={`text-gray-900 dark:text-gray-100 ${errors.phoneNumber ? "text-red-500" : ""}`}>
+                          Phone Number <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} data-testid="input-phone" />
+                          <Input 
+                            {...field} 
+                            data-testid="input-phone" 
+                            aria-invalid={!!errors.phoneNumber}
+                            className={errors.phoneNumber ? "border-red-500 focus:border-red-500 focus:ring-red-500 ring-red-500" : undefined}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -204,23 +223,6 @@ export default function Settings() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="qrCodePattern"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>QR Code URL Pattern</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="https://verify.yourorg.com/{id}"
-                          data-testid="input-qr-pattern"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <Button 
                   type="submit" 
@@ -272,24 +274,6 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* QR Code Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>QR Code Settings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                QR Code pattern is configured in the main form. Each member card will generate a unique QR code.
-              </p>
-              
-              <Button variant="secondary" className="w-full" data-testid="test-qr">
-                <QrCode className="mr-2 h-4 w-4" />
-                Test QR Code
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Signature Upload */}
         <Card>

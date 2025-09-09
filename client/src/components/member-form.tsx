@@ -9,7 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { insertMemberSchema, Member } from "@shared/schema";
 import { Eye, Download, Camera } from "lucide-react";
+import { createApiUrl } from "@/lib/api";
 import FileUpload from "@/components/ui/file-upload";
+import { ProfessionalDatePicker } from "@/components/ui/professional-date-picker";
 import { generatePDF } from "@/lib/pdf-generator";
 
 interface MemberFormProps {
@@ -18,15 +20,19 @@ interface MemberFormProps {
 
 export default function MemberForm({ onPreview }: MemberFormProps) {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const form = useForm({
-    resolver: zodResolver(insertMemberSchema.extend({
-      emergencyContactName: insertMemberSchema.shape.emergencyContactName.optional(),
-      emergencyContactNumber: insertMemberSchema.shape.emergencyContactNumber.optional(),
-      bloodGroup: insertMemberSchema.shape.bloodGroup.optional(),
-    })),
+    // Make emergency fields optional for client-side validation
+    resolver: zodResolver(
+      insertMemberSchema.extend({
+        emergencyContactName: insertMemberSchema.shape.emergencyContactName.optional(),
+        emergencyContactNumber: insertMemberSchema.shape.emergencyContactNumber.optional(),
+        bloodGroup: insertMemberSchema.shape.bloodGroup.optional(),
+      })
+    ),
     defaultValues: {
       fullName: "",
       designation: "",
@@ -59,14 +65,22 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
         formData.append('photo', photoFile);
       }
 
-      const response = await fetch('/api/members', {
+      const token = await (await import("@/lib/auth")).auth.currentUser?.getIdToken();
+      const response = await fetch(createApiUrl('/api/members'), {
         method: 'POST',
         body: formData,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create member');
+        let detail = '';
+        try {
+          const errJson = await response.json();
+          detail = errJson?.issues ? JSON.stringify(errJson.issues) : (errJson?.error || errJson?.message || '');
+        } catch {}
+        throw new Error(detail ? `Failed to create member: ${detail}` : 'Failed to create member');
       }
 
       return response.json();
@@ -80,7 +94,7 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
       
       // Generate and download PDF
       try {
-        await generatePDF(member, photoFile);
+        await generatePDF(member);
         toast({
           title: "PDF Generated",
           description: "ID card PDF opened in new tab",
@@ -98,38 +112,80 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
       form.reset();
       setPhotoFile(null);
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      // Handle server validation errors
+      if (error?.response?.data?.message) {
+        const serverError = error.response.data;
+        toast({
+          title: serverError.message || "Validation Error",
+          description: serverError.details || "Please check your input and try again",
+          variant: "destructive",
+        });
+      } else {
+        // Handle other errors
+        toast({
+          title: "Error",
+          description: error.message || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
   const handlePreview = () => {
     const formData = form.getValues();
-    const dataWithId = {
-      ...formData,
-      memberId: memberIdValue
-    };
-    onPreview(dataWithId, photoFile || undefined);
+    onPreview(formData, photoFile || undefined);
+  };
+
+  const handleGeneratePDF = async () => {
+    // Show validation errors
+    setShowValidationErrors(true);
+    
+    // Trigger validation for all fields
+    const isValid = await form.trigger();
+    
+    if (!isValid) {
+      // Get current form errors
+      const errors = form.formState.errors;
+      const requiredFields = Object.keys(errors).filter(field => 
+        ['fullName', 'designation', 'joiningDate', 'contactNumber'].includes(field)
+      );
+      
+      if (requiredFields.length > 0) {
+        toast({
+          title: "Required Fields Missing",
+          description: `Please fill in: ${requiredFields.map(field => {
+            switch(field) {
+              case 'fullName': return 'Full Name';
+              case 'designation': return 'Designation/Role';
+              case 'joiningDate': return 'Date of Joining';
+              case 'contactNumber': return 'Contact Number';
+              default: return field;
+            }
+          }).join(', ')}`,
+          variant: "destructive",
+        });
+        
+        // Scroll to first error field
+        const firstErrorField = requiredFields[0];
+        const errorElement = document.querySelector(`[data-testid="input-${firstErrorField}"]`) || 
+                           document.querySelector(`[data-testid="select-${firstErrorField}"]`);
+        if (errorElement) {
+          errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (errorElement as HTMLElement).focus();
+        }
+      }
+      return;
+    }
+    
+    // If valid, proceed with form submission
+    const formData = form.getValues();
+    createMemberMutation.mutate(formData);
   };
 
   const onSubmit = (data: any) => {
-    // Add the generated member ID to the form data
-    const memberData = {
-      ...data,
-      memberId: memberIdValue
-    };
-    createMemberMutation.mutate(memberData);
+    createMemberMutation.mutate(data);
   };
-
-  const [memberIdValue] = useState(() => {
-    const year = new Date().getFullYear();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `NGO-${year}-${random}`;
-  });
 
   return (
     <Form {...form}>
@@ -169,74 +225,98 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
           <FormField
             control={form.control}
             name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name *</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Enter full name" data-testid="input-full-name" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.error || (showValidationErrors && !field.value);
+              return (
+                <FormItem>
+                  <FormLabel className={hasError ? "text-red-600" : ""}>
+                    Full Name <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      placeholder="Enter full name" 
+                      data-testid="input-full-name"
+                      className={hasError ? "border-red-500 focus:ring-red-500" : ""}
+                    />
+                  </FormControl>
+                  {hasError && (
+                    <FormMessage className="text-red-600 text-sm animate-in slide-in-from-top-1 duration-200">
+                      {fieldState.error?.message || "Full Name is required"}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              );
+            }}
           />
 
-          <FormItem>
-            <FormLabel>Member ID *</FormLabel>
-            <FormControl>
-              <Input 
-                value={memberIdValue} 
-                placeholder="Auto-generated" 
-                readOnly 
-                className="bg-gray-50"
-                data-testid="input-member-id"
-              />
-            </FormControl>
-          </FormItem>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="designation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Designation/Role *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger data-testid="select-designation">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="volunteer">Volunteer</SelectItem>
-                    <SelectItem value="coordinator">Coordinator</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="executive">Executive</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.error || (showValidationErrors && !field.value);
+              return (
+                <FormItem>
+                  <FormLabel className={hasError ? "text-red-600" : ""}>
+                    Designation/Role <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger 
+                        data-testid="select-designation"
+                        className={hasError ? "border-red-500 focus:ring-red-500" : ""}
+                      >
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="volunteer">Volunteer</SelectItem>
+                      <SelectItem value="coordinator">Coordinator</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="executive">Executive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {hasError && (
+                    <FormMessage className="text-red-600 text-sm animate-in slide-in-from-top-1 duration-200">
+                      {fieldState.error?.message || "Designation/Role is required"}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              );
+            }}
           />
 
           <FormField
             control={form.control}
             name="joiningDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date of Joining *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="date" 
-                    {...field}
-                    value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
-                    data-testid="input-joining-date"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.error || (showValidationErrors && !field.value);
+              return (
+                <FormItem>
+                  <FormLabel className={hasError ? "text-red-600" : ""}>
+                    Date of Joining <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <ProfessionalDatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select joining date"
+                      data-testid="input-joining-date"
+                      className={hasError ? "border-red-500 focus:ring-red-500" : ""}
+                    />
+                  </FormControl>
+                  {hasError && (
+                    <FormMessage className="text-red-600 text-sm animate-in slide-in-from-top-1 duration-200">
+                      {fieldState.error?.message || "Date of Joining is required"}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              );
+            }}
           />
         </div>
 
@@ -244,20 +324,30 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
           <FormField
             control={form.control}
             name="contactNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Number *</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...field} 
-                    type="tel" 
-                    placeholder="+1 (555) 123-4567"
-                    data-testid="input-contact"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.error || (showValidationErrors && !field.value);
+              return (
+                <FormItem>
+                  <FormLabel className={hasError ? "text-red-600" : ""}>
+                    Contact Number <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      type="tel" 
+                      placeholder="+1 (555) 123-4567"
+                      data-testid="input-contact"
+                      className={hasError ? "border-red-500 focus:ring-red-500" : ""}
+                    />
+                  </FormControl>
+                  {hasError && (
+                    <FormMessage className="text-red-600 text-sm animate-in slide-in-from-top-1 duration-200">
+                      {fieldState.error?.message || "Contact Number is required"}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              );
+            }}
           />
 
           <FormField
@@ -338,17 +428,18 @@ export default function MemberForm({ onPreview }: MemberFormProps) {
             type="button" 
             variant="outline"
             onClick={handlePreview}
-            className="flex-1"
+            className="flex-1 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-slate-100 transition-colors duration-150"
             data-testid="preview-card"
           >
             <Eye className="mr-2 h-4 w-4" />
             Preview Card
           </Button>
           <Button 
-            type="submit" 
-            className="flex-1 bg-secondary hover:bg-green-600"
+            type="button" 
+            className="flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white"
             disabled={createMemberMutation.isPending}
             data-testid="generate-pdf"
+            onClick={handleGeneratePDF}
           >
             <Download className="mr-2 h-4 w-4" />
             {createMemberMutation.isPending ? "Generating..." : "Generate PDF"}

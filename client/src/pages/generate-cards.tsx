@@ -21,7 +21,7 @@ export default function GenerateCards() {
       <Card>
         <CardHeader>
           <CardTitle>Member Information</CardTitle>
-          <p className="text-sm text-gray-600">Fill in the details to generate ID card</p>
+          <p className="text-sm text-gray-600 dark:text-slate-400">Fill in the details to generate ID card</p>
         </CardHeader>
         <CardContent>
           <MemberForm onPreview={handlePreview} />
