@@ -59,11 +59,22 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+  // Add a happy message route for direct backend access
+  app.get('/', (req, res) => {
+    res.json({
+      message: "🎉 Creden Suite Backend is Live! 🚀",
+      status: "success",
+      timestamp: new Date().toISOString(),
+      frontend: "Visit your Vercel frontend URL to access the full application",
+      api: "API endpoints are available at /api/*"
+    });
+  });
+
   const port = parseInt(process.env.PORT || '5000', 10);
   server.listen({
     port,
-    host: "localhost",
+    host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for Railway deployment
   }, () => {
-    log(`serving on localhost:${port}`);
+    log(`🚀 Creden Suite Backend serving on 0.0.0.0:${port}`);
   });
 })();
