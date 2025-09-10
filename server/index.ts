@@ -1,9 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { createServer } from "http";
 import dotenv from "dotenv";
 import path from "path";
-import { existsSync } from "fs";
 
 const envPath = path.resolve(import.meta.dirname, "..", ".env");
 dotenv.config({ path: envPath });
@@ -12,86 +10,76 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+// Simple logging function
+function log(message: string) {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${message}`);
+}
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
+// Health check endpoint - MUST be first and simple
+app.get('/health', (req, res) => {
+  log('Health check requested');
+  res.json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    service: "Creden Suite Backend"
   });
-
-  next();
 });
 
-(async () => {
-  try {
-    const server = await registerRoutes(app);
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: "🎉 Creden Suite Backend is Live! 🚀",
+    status: "success",
+    timestamp: new Date().toISOString(),
+    frontend: "Visit your Vercel frontend URL to access the full application",
+    api: "API endpoints are available at /api/*"
+  });
+});
 
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
+// Error handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  log(`Error: ${status} - ${message}`);
+  res.status(status).json({ message });
+});
 
-      res.status(status).json({ message });
-      throw err;
-    });
+// Start server
+const port = parseInt(process.env.PORT || '5000', 10);
+const server = createServer(app);
 
-    if (app.get("env") === "development") {
-      await setupVite(app, server);
-    } else {
-      serveStatic(app);
-    }
+server.listen(port, "0.0.0.0", () => {
+  log(`🚀 Creden Suite Backend serving on 0.0.0.0:${port}`);
+  log(`Health check available at: http://0.0.0.0:${port}/health`);
+});
 
-    // Add a happy message route for direct backend access
-    app.get('/', (req, res) => {
-      res.json({
-        message: "🎉 Creden Suite Backend is Live! 🚀",
-        status: "success",
-        timestamp: new Date().toISOString(),
-        frontend: "Visit your Vercel frontend URL to access the full application",
-        api: "API endpoints are available at /api/*"
-      });
-    });
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+  log(`Uncaught Exception: ${error.message}`);
+  console.error(error);
+  process.exit(1);
+});
 
-    const port = parseInt(process.env.PORT || '5000', 10);
-    server.listen({
-      port,
-      host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for Railway deployment
-    }, () => {
-      log(`🚀 Creden Suite Backend serving on 0.0.0.0:${port}`);
-    });
+process.on('unhandledRejection', (reason, promise) => {
+  log(`Unhandled Rejection: ${reason}`);
+  console.error('Promise:', promise, 'Reason:', reason);
+  process.exit(1);
+});
 
-    // Handle uncaught exceptions and unhandled rejections
-    process.on('uncaughtException', (error) => {
-      console.error('Uncaught Exception:', error);
-      process.exit(1);
-    });
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    log('Server closed');
+    process.exit(0);
+  });
+});
 
-    process.on('unhandledRejection', (reason, promise) => {
-      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-      process.exit(1);
-    });
-
-  } catch (error) {
-    console.error('Server startup error:', error);
-    process.exit(1);
-  }
-})();
+process.on('SIGINT', () => {
+  log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    log('Server closed');
+    process.exit(0);
+  });
+});
