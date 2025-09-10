@@ -81,6 +81,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Ensure whitelist has the default emails on first run
   await seedWhitelistIfEmpty();
 
+  // Health check endpoint (public - no auth required for Railway)
+  app.get('/health', (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      service: "Creden Suite Backend"
+    });
+  });
+
   // Protect all API routes below with Firebase auth and email whitelist
   app.use('/api', verifyUser);
 
