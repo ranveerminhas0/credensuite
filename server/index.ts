@@ -43,38 +43,55 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  // Add a happy message route for direct backend access
-  app.get('/', (req, res) => {
-    res.json({
-      message: "🎉 Creden Suite Backend is Live! 🚀",
-      status: "success",
-      timestamp: new Date().toISOString(),
-      frontend: "Visit your Vercel frontend URL to access the full application",
-      api: "API endpoints are available at /api/*"
+      res.status(status).json({ message });
+      throw err;
     });
-  });
 
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for Railway deployment
-  }, () => {
-    log(`🚀 Creden Suite Backend serving on 0.0.0.0:${port}`);
-  });
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
+
+    // Add a happy message route for direct backend access
+    app.get('/', (req, res) => {
+      res.json({
+        message: "🎉 Creden Suite Backend is Live! 🚀",
+        status: "success",
+        timestamp: new Date().toISOString(),
+        frontend: "Visit your Vercel frontend URL to access the full application",
+        api: "API endpoints are available at /api/*"
+      });
+    });
+
+    const port = parseInt(process.env.PORT || '5000', 10);
+    server.listen({
+      port,
+      host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for Railway deployment
+    }, () => {
+      log(`🚀 Creden Suite Backend serving on 0.0.0.0:${port}`);
+    });
+
+    // Handle uncaught exceptions and unhandled rejections
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught Exception:', error);
+      process.exit(1);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+      process.exit(1);
+    });
+
+  } catch (error) {
+    console.error('Server startup error:', error);
+    process.exit(1);
+  }
 })();
