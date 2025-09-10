@@ -1,10 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import dotenv from "dotenv";
-import path from "path";
 
-const envPath = path.resolve(import.meta.dirname, "..", ".env");
-dotenv.config({ path: envPath });
+dotenv.config(); // Works locally with .env, and Railway injects vars automatically
 
 const app = express();
 app.use(express.json());
