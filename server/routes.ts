@@ -78,10 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve uploaded files
   app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-  // Ensure whitelist has the default emails on first run
-  await seedWhitelistIfEmpty();
-
   // Health check endpoint (public - no auth required for Railway)
+  // MUST be before database operations to ensure Railway healthcheck works
   app.get('/health', (req, res) => {
     res.json({ 
       status: "ok", 
@@ -89,6 +87,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       service: "Creden Suite Backend"
     });
   });
+
+  // Ensure whitelist has the default emails on first run
+  await seedWhitelistIfEmpty();
 
   // Protect all API routes below with Firebase auth and email whitelist
   app.use('/api', verifyUser);
