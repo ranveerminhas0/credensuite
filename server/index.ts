@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
     message: "🎉 Creden Suite Backend is Live! 🚀",
     status: "success",
     timestamp: new Date().toISOString(),
-    frontend: "Visit your Vercel frontend URL to access the full application",
+    frontend: "Visit your frontend URL to access the full application",
     api: "API endpoints are available at /api/*"
   });
 });
