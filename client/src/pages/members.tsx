@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { toAbsoluteUrl } from "@/lib/api";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { Member } from "@shared/schema";
 import { createApiUrl } from "@/lib/api";
@@ -84,7 +85,8 @@ export default function Members() {
     mutationFn: async (member: Member) => {
       const mongoId = (member as any)?._id as string | undefined;
       const idOrMongo = mongoId || member.id;
-      await apiRequest("PATCH", `/api/members/${idOrMongo}`, { isActive: !member.isActive });
+      // Use dedicated toggle endpoint to avoid 405 method issues
+      await apiRequest("POST", `/api/members/${idOrMongo}/toggle`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });
@@ -409,7 +411,7 @@ export default function Members() {
                         <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center overflow-hidden">
                           {member.photoUrl ? (
                             <img 
-                              src={member.photoUrl} 
+                              src={toAbsoluteUrl(member.photoUrl)} 
                               alt={member.fullName}
                               className="w-full h-full object-cover"
                             />

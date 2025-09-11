@@ -1,5 +1,6 @@
 import { Search, Bell, BellRing, User, LogOut, Menu, Loader2, Moon, Sun, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { toAbsoluteUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useLocation, Link } from "wouter";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -258,6 +259,8 @@ export default function Header() {
     },
     enabled: !!debounced,
     placeholderData: [] as Member[],
+    staleTime: 0,
+    gcTime: 0,
   });
 
   // removed inline dialog in favor of a stable, top-level dialog to avoid remount flicker
@@ -336,7 +339,7 @@ export default function Header() {
                     >
                       <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center ring-1 ring-gray-200 dark:ring-slate-700">
                         {m.photoUrl ? (
-                          <img src={m.photoUrl} alt={m.fullName} className="w-full h-full object-cover" />
+                          <img src={toAbsoluteUrl(m.photoUrl)} alt={m.fullName} className="w-full h-full object-cover" />
                         ) : (
                           <User className="h-3.5 w-3.5 text-gray-500 dark:text-slate-300" />
                         )}

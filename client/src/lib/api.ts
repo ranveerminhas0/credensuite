@@ -20,6 +20,14 @@ export const createApiUrl = (endpoint: string) => {
   return `${API_BASE_URL}/${cleanEndpoint}`;
 };
 
+// Convert relative server paths (like /uploads/...) to absolute URLs
+export const toAbsoluteUrl = (maybeRelative: string | null | undefined): string | undefined => {
+  if (!maybeRelative) return undefined;
+  if (maybeRelative.startsWith('http://') || maybeRelative.startsWith('https://')) return maybeRelative;
+  if (maybeRelative.startsWith('/uploads/')) return `${API_BASE_URL}${maybeRelative}`;
+  return maybeRelative;
+};
+
 // Helper function for API calls with proper error handling
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   const url = createApiUrl(endpoint);
