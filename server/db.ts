@@ -11,7 +11,19 @@ export async function getDb(): Promise<Db> {
   }
   client = new MongoClient(uri, { serverSelectionTimeoutMS: 10000 });
   await client.connect();
-  const dbName = (client.options as any)?.dbName || "ngodb";
+
+  // Prefer explicit DB name via env, else derive from URI path, else fallback
+  const explicitDb = process.env.MONGODB_DB;
+  let derivedDb: string | undefined;
+  try {
+    const match = uri.match(/\/([^\/?]+)(?:\?|$)/);
+    if (match && match[1] && !match[1].includes("@")) {
+      derivedDb = match[1];
+    }
+  } catch {}
+  const fallback = "credensuite";
+  const dbName = explicitDb || derivedDb || (client.options as any)?.dbName || fallback;
+  console.log(`[Mongo] Connected. Using database: ${dbName}`);
   db = client.db(dbName);
   return db;
 }
