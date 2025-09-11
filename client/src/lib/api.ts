@@ -2,7 +2,9 @@
 const getApiBaseUrl = () => {
   // In production, use the environment variable
   if (import.meta.env.PROD) {
-    return import.meta.env.VITE_API_BASE_URL || 'https://your-railway-app.railway.app';
+    const raw = (import.meta.env.VITE_API_BASE_URL as string | undefined) || 'https://your-railway-app.railway.app';
+    // Normalize: remove any trailing slashes
+    return raw.replace(/\/+$/, '');
   }
   
   // In development, use localhost
