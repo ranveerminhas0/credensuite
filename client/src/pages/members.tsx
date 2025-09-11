@@ -59,6 +59,8 @@ export default function Members() {
     queryFn: getQueryFn<Member[]>({ on401: "returnNull" }),
     // Note: older TanStack versions use 'placeholderData' to keep UX stable
     placeholderData: (prev) => prev,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const deleteMutation = useMutation({
@@ -86,7 +88,17 @@ export default function Members() {
       const mongoId = (member as any)?._id as string | undefined;
       const idOrMongo = mongoId || member.id;
       // Use dedicated toggle endpoint to avoid 405 method issues
-      await apiRequest("POST", `/api/members/${idOrMongo}/toggle`);
+      const token = await (await import("@/lib/auth")).auth.currentUser?.getIdToken();
+      const response = await fetch(createApiUrl(`/api/members/${idOrMongo}/toggle`), {
+        method: 'POST',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to toggle member: ${response.status}`);
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });

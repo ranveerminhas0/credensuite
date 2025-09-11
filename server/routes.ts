@@ -75,8 +75,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ],
     } as any;
   }
-  // Serve uploaded files
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+  // Serve uploaded files with CORS headers
+  app.use('/uploads', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    next();
+  }, express.static(path.join(process.cwd(), 'uploads')));
 
   // Health check endpoint (public - no auth required for Railway)
   // MUST be before database operations to ensure Railway healthcheck works
