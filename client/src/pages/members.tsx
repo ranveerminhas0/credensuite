@@ -65,7 +65,16 @@ export default function Members() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/members/${id}`);
+      const token = await (await import("@/lib/auth")).auth.currentUser?.getIdToken();
+      const response = await fetch(createApiUrl(`/api/members/${id}`), {
+        method: 'DELETE',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete member: ${response.status}`);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });

@@ -1,6 +1,6 @@
 import { Search, Bell, BellRing, User, LogOut, Menu, Loader2, Moon, Sun, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { toAbsoluteUrl } from "@/lib/api";
+import { toAbsoluteUrl, createApiUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useLocation, Link } from "wouter";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -57,7 +57,7 @@ function MemberDetailsDialog({ member, onClose }: { member: Member | null; onClo
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center overflow-hidden">
               {member.photoUrl ? (
-                <img src={member.photoUrl} alt={member.fullName} className="w-full h-full object-cover" />
+                <img src={toAbsoluteUrl(member.photoUrl)} alt={member.fullName} className="w-full h-full object-cover" />
               ) : (
                 <User className="h-8 w-8 text-gray-500 dark:text-slate-300" />
               )}
@@ -254,7 +254,15 @@ export default function Header() {
     queryKey: [debounced ? `/api/members?search=${encodeURIComponent(debounced)}` : null],
     queryFn: async () => {
       if (!debounced) return [] as Member[];
-      const res = await apiRequest("GET", `/api/members?search=${encodeURIComponent(debounced)}`);
+      const token = await (await import("@/lib/auth")).auth.currentUser?.getIdToken();
+      const res = await fetch(createApiUrl(`/api/members?search=${encodeURIComponent(debounced)}`), {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`Search failed: ${res.status}`);
+      }
       return (await res.json()) as Member[];
     },
     enabled: !!debounced,
