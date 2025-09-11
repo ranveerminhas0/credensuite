@@ -1,5 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 import { auth } from "@/lib/auth";
+import { createApiUrl } from "@/lib/api";
 
 async function getAuthTokenSafe(): Promise<string | null> {
   try {
@@ -76,7 +77,9 @@ export const getQueryFn: <T>(options: {
       if (unauthorizedBehavior === "returnNull") return null;
       throw new Error("UNAUTHENTICATED");
     }
-    const res = await fetch(queryKey.join("/") as string, {
+    const endpoint = String(queryKey[0] ?? "");
+    const url = createApiUrl(endpoint);
+    const res = await fetch(url, {
       credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`,
