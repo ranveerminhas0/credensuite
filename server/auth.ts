@@ -19,7 +19,8 @@ function initializeFirebaseAdmin(): void {
 
   // Default path: server/firebase-service-account.json
   const serviceAccountPath = path.resolve(
-    import.meta.dirname,
+    process.cwd(),
+    "server",
     "firebase-service-account.json",
   );
 
