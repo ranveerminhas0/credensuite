@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-streak recovery
-thanks for coming here and opening it
-=======
+
+
 under progress file 
 working on db
->>>>>>> 3d6f94a2fbcc044a30a12387c1446abdc2082cd2
-another line
